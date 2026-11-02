@@ -65,6 +65,14 @@ export const DEMO_DATA = {
       riskLevel: 'baixo',
       aiText:
         'O aluno apresenta excelente estabilidade emocional e senso de organização, com indicadores dentro da faixa regular de tranquilidade.',
+      sinaisAlerta: [],
+      fatoresProtetivos: [
+        'Organização e engajamento nos estudos',
+        'Apoio e convivência familiar',
+        'Regulação emocional e tranquilidade',
+      ],
+      recomendacao:
+        'Manter acompanhamento regular pelo diário e incentivar a continuidade dos hábitos de estudo e vínculos familiares positivos.',
       urgency: 'leve',
       aiSource: 'demo',
     },
@@ -92,7 +100,15 @@ export const DEMO_DATA = {
       },
       riskLevel: 'atencao',
       aiText:
-        'O aluno demonstra sinais iniciais de desgaste e ansiedade frente às avaliações escolares. Recomenda-se acompanhamento preventivo pela orientação pedagógica.',
+        'O aluno demonstra sinais iniciais de desgaste e ansiedade frente às avaliações escolares. O quadro é situacional, mas requer observação preventiva.',
+      sinaisAlerta: [
+        'Pressão avaliativa e estresse',
+        'Sobrecarga de entregas escolares',
+        'Ansiedade pré-simulado',
+      ],
+      fatoresProtetivos: ['Esforço ativo para manter a rotina de estudos'],
+      recomendacao:
+        'Agendar conversa preventiva com a orientação pedagógica para apoio no planejamento de estudos e manejo de ansiedade pré-provas.',
       urgency: 'moderado',
       aiSource: 'demo',
     },
@@ -120,7 +136,16 @@ export const DEMO_DATA = {
       },
       riskLevel: 'alto',
       aiText:
-        'O aluno manifesta sofrimento psíquico acentuado com sinais de sobrecarga crônica, isolamento e esgotamento. Recomendada escuta especializada e contato de apoio imediato.',
+        'O aluno manifesta sofrimento psíquico acentuado com sinais de sobrecarga crônica, isolamento e esgotamento. Em comparação ao registro anterior, houve escalada severa nos indicadores.',
+      sinaisAlerta: [
+        'Esgotamento e sobrecarga escolar aguda',
+        'Crises de choro noturnas / Humor deprimido',
+        'Sentimento de não pertencimento e isolamento',
+        'Pressão acumulada (escola e família)',
+      ],
+      fatoresProtetivos: [],
+      recomendacao:
+        'Acionar imediatamente o psicólogo escolar para escuta individual acolhedora e planejar orientação cuidadosa junto à família sobre cobrança excessiva.',
       urgency: 'critico',
       aiSource: 'demo',
     },

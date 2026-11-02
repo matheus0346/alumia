@@ -1,4 +1,5 @@
 import { DEMO_DATA } from '../constants/demoData';
+import { normalizeAnalysisResult } from '../utils/clinical';
 
 export const KEYS = {
   schools: 'alm_sc',
@@ -32,6 +33,27 @@ export const DB = {
   },
 };
 
+const enrichLegacyEntry = (entry) => {
+  const demoMatch = DEMO_DATA.entries.find((d) => d.id === entry.id);
+  const norm = normalizeAnalysisResult({
+    indicators: entry.indicators,
+    nivel_risco: entry.riskLevel,
+    analise: entry.aiText,
+    sinais_alerta: entry.sinaisAlerta ?? demoMatch?.sinaisAlerta,
+    fatores_protetivos: entry.fatoresProtetivos ?? demoMatch?.fatoresProtetivos,
+    recomendacao: entry.recomendacao ?? demoMatch?.recomendacao,
+  });
+  return {
+    ...entry,
+    indicators: norm.indicators,
+    riskLevel: norm.nivel_risco,
+    aiText: norm.analise,
+    sinaisAlerta: norm.sinais_alerta,
+    fatoresProtetivos: norm.fatores_protetivos,
+    recomendacao: norm.recomendacao,
+  };
+};
+
 export const loadInitialData = async () => {
   let [schools, students, entries] = await Promise.all([
     DB.get(KEYS.schools),
@@ -48,6 +70,8 @@ export const loadInitialData = async () => {
       DB.set(KEYS.students, students),
       DB.set(KEYS.entries, entries),
     ]);
+  } else if (Array.isArray(entries)) {
+    entries = entries.map(enrichLegacyEntry);
   }
 
   return {

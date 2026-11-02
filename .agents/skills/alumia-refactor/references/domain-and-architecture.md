@@ -9,15 +9,15 @@ src/
 ├── styles/
 │   └── global.css                  # Typography (Syne, Epilogue, JetBrains Mono), animations, utility classes
 ├── constants/
-│   ├── indicators.js               # IND (12 indicators), RISK, URG, ADMIN_EMAIL, ADMIN_HASH
+│   ├── indicators.js               # IND (12 indicators), INDICATOR_COLORS, RISK, URG, ADMIN_EMAIL
 │   └── demoData.js                 # Initial seed data for demo/presentation
 ├── utils/
 │   ├── crypto.js                   # hash(), uid(), genToken(), genPhrase(), normalizePhrase()
 │   ├── date.js                     # Local-timezone todayISO(), fmtDate(), fmtLong(), fmtTs(), getWeekDates()
 │   └── clinical.js                 # calcRiskLevel(), calcUrgency(), calcTrend(), iColor(), normalizeAnalysisResult()
 ├── services/
-│   ├── storageService.js           # DB wrapper (localStorage + window.storage fallback) & seed initializer
-│   └── aiService.js                # Claude Sonnet API integration + clinical heuristic fallback
+│   ├── storageService.js           # DB wrapper (localStorage + window.storage fallback) & seed/legacy initializer
+│   └── aiService.js                # Claude Sonnet API integration + deterministic negation-aware fallback
 ├── context/
 │   └── AppContext.jsx              # React Context providing db state, auth state, and domain actions
 ├── components/
@@ -34,7 +34,7 @@ src/
 │   │   ├── DiaryEditor.jsx         # Safe writing modal & read-only past entry viewer
 │   │   └── SubmissionModal.jsx     # Welcoming post-submission confirmation for the student
 │   ├── school/
-│   │   └── SchoolDashboard.jsx     # Full clinical dashboard for school professionals (6 tabs)
+│   │   └── SchoolDashboard.jsx     # Full clinical dashboard for school professionals (6 tabs + ClinicalParametersBlock)
 │   └── admin/
 │       └── AdminPanel.jsx          # LGPD-restricted school & token administration
 └── pages/
@@ -64,7 +64,6 @@ src/
   "createdAt": 1730000000000
 }
 ```
-*Note*: `firstLogin: false` means the student has **not** completed their first login onboarding yet. On their first login, a 6-word secret recovery phrase is generated, its hash is stored in `recoveryHash`, the student can optionally set a new personal password, and `firstLogin` is set to `true`.
 
 ### Diary Entry & AI Analysis Record (`db.entries[i]`)
 ```json
@@ -92,16 +91,29 @@ src/
   "riskLevel": "baixo",
   "urgency": "leve",
   "aiText": "O aluno apresenta...",
-  "aiSource": "claude"
+  "sinaisAlerta": [],
+  "fatoresProtetivos": [
+    "Organização e engajamento nos estudos",
+    "Apoio e convivência familiar"
+  ],
+  "recomendacao": "Manter acompanhamento regular pelo diário...",
+  "aiSource": "claude-sonnet-4-20250514"
 }
 ```
 
-## 3. Claude Sonnet Prompt Contract (`src/services/aiService.js`)
+## 3. Claude Sonnet Prompt & Rubric Contract (`src/services/aiService.js`)
 
 - **Environment Variables**:
   - `VITE_ANTHROPIC_API_KEY`: Anthropic API Key.
   - `VITE_ANTHROPIC_MODEL`: Optional model override (default: `claude-sonnet-4-20250514`).
+- **API Parameters**:
+  - `temperature: 0.2` (clinical consistency across evaluations).
+  - `system`: Psychometric rubric anchoring `0-24` (expected/absent), `25-49` (mild/situational), `50-69` (moderate/persistent), and `70-100` (severe/critical), plus negation/context awareness.
+  - `messages[0].content`: Includes up to 3 recent historical snapshots (`previousEntries`) for longitudinal comparison alongside the current student diary entry.
 - **Expected JSON Output from Claude**:
   - All 12 keys from `IND` as integers `0` to `100`.
   - `nivel_risco`: `"baixo" | "atencao" | "alto"`.
-  - `analise`: 2 to 3 clinical sentences in Portuguese starting with `"O aluno"`, written for the school psychologist/counselor (identifying emotional patterns and suggesting appropriate school support).
+  - `sinais_alerta`: Array of up to 4 clinical warning signs extracted from the text.
+  - `fatores_protetivos`: Array of up to 4 protective factors / coping resources present in the text.
+  - `analise`: 2 to 3 clinical sentences in Portuguese starting with `"O aluno"`, written for the school psychologist/counselor.
+  - `recomendacao`: 1 actionable sentence guiding the school team's intervention.

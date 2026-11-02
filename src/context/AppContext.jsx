@@ -63,7 +63,10 @@ export const AppProvider = ({ children }) => {
         return { ok: false, error: 'Frase secreta de recuperação incorreta.' };
       }
       if (!newPassword || newPassword.trim().length < 4) {
-        return { ok: false, error: 'A nova senha deve ter no mínimo 4 caracteres.' };
+        return {
+          ok: false,
+          error: 'A nova senha deve ter no mínimo 4 caracteres.',
+        };
       }
       const updatedStudent = {
         ...student,
@@ -79,7 +82,10 @@ export const AppProvider = ({ children }) => {
 
   const createDiaryEntry = useCallback(
     async ({ studentCode, schoolToken, date, text }) => {
-      const analysis = await aiAnalyze(text);
+      const previousEntries = (db?.entries || []).filter(
+        (e) => e.studentCode === studentCode
+      );
+      const analysis = await aiAnalyze(text, previousEntries);
       const entry = {
         id: uid(),
         studentCode,
@@ -90,6 +96,9 @@ export const AppProvider = ({ children }) => {
         indicators: analysis.indicators,
         riskLevel: analysis.nivel_risco || 'baixo',
         aiText: analysis.analise || '',
+        sinaisAlerta: analysis.sinais_alerta || [],
+        fatoresProtetivos: analysis.fatores_protetivos || [],
+        recomendacao: analysis.recomendacao || '',
         aiSource: analysis.aiSource || 'claude',
       };
       entry.urgency = calcUrgency(entry);
@@ -136,7 +145,10 @@ export const AppProvider = ({ children }) => {
         return { ok: false, error: 'Aluno não encontrado nesta escola.' };
       }
       if (!newPassword || newPassword.trim().length < 4) {
-        return { ok: false, error: 'A nova senha deve ter no mínimo 4 caracteres.' };
+        return {
+          ok: false,
+          error: 'A nova senha deve ter no mínimo 4 caracteres.',
+        };
       }
       const students = {
         ...db.students,

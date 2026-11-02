@@ -17,6 +17,127 @@ import { fmtDate, fmtTs } from '../../utils/date';
 import { useApp } from '../../context/AppContext';
 import { Shell, Mn, Tag, Inf, IBar, Dv, Fld, Btn } from '../ui/Primitives';
 
+const ClinicalParametersBlock = ({ entry }) => {
+  if (!entry) return null;
+  const sinais = entry.sinaisAlerta || [];
+  const protetivos = entry.fatoresProtetivos || [];
+  const recomendacao = entry.recomendacao || '';
+
+  if (sinais.length === 0 && protetivos.length === 0 && !recomendacao) {
+    return null;
+  }
+
+  return (
+    <div style={{ marginTop: 12, marginBottom: 14 }}>
+      {(sinais.length > 0 || protetivos.length > 0) && (
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit,minmax(210px,1fr))',
+            gap: 10,
+            marginBottom: recomendacao ? 10 : 0,
+          }}
+        >
+          {sinais.length > 0 && (
+            <div
+              style={{
+                padding: '10px 12px',
+                background: '#fff5f5',
+                border: '1px solid #fecaca',
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 9.5,
+                  fontWeight: 700,
+                  color: '#dc2626',
+                  letterSpacing: '.08em',
+                  marginBottom: 6,
+                }}
+              >
+                ⚠️ SINAIS DE ALERTA IDENTIFICADOS
+              </div>
+              <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+                {sinais.map((s, idx) => (
+                  <span
+                    key={idx}
+                    style={{
+                      fontSize: 11.5,
+                      color: '#b91c1c',
+                      background: '#fff',
+                      border: '1px solid #fca5a5',
+                      padding: '2px 7px',
+                    }}
+                  >
+                    {s}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {protetivos.length > 0 && (
+            <div
+              style={{
+                padding: '10px 12px',
+                background: '#f0fdf4',
+                border: '1px solid #bbf7d0',
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 9.5,
+                  fontWeight: 700,
+                  color: '#15803d',
+                  letterSpacing: '.08em',
+                  marginBottom: 6,
+                }}
+              >
+                🛡️ FATORES PROTETIVOS / RECURSOS
+              </div>
+              <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+                {protetivos.map((p, idx) => (
+                  <span
+                    key={idx}
+                    style={{
+                      fontSize: 11.5,
+                      color: '#166534',
+                      background: '#fff',
+                      border: '1px solid #86efac',
+                      padding: '2px 7px',
+                    }}
+                  >
+                    {p}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {recomendacao && (
+        <div
+          style={{
+            padding: '10px 13px',
+            background: '#f8fafc',
+            border: '1px solid #e2e8f0',
+            borderLeft: '3px solid #0f172a',
+            fontSize: 12.5,
+            color: '#334155',
+            lineHeight: 1.55,
+          }}
+        >
+          <strong style={{ color: '#0f172a' }}>
+            🎯 Conduta Recomendada à Escola:{' '}
+          </strong>
+          {recomendacao}
+        </div>
+      )}
+    </div>
+  );
+};
+
 export const SchoolDashboard = () => {
   const { auth, logout, db, createStudent, resetStudentAccess } = useApp();
 
@@ -586,12 +707,14 @@ export const SchoolDashboard = () => {
                         fontSize: 13.5,
                         color: '#444',
                         lineHeight: 1.75,
-                        marginBottom: 18,
+                        marginBottom: 12,
                       }}
                     >
                       {selSt.latest.aiText}
                     </div>
                   )}
+
+                  <ClinicalParametersBlock entry={selSt.latest} />
 
                   <div
                     style={{
@@ -600,6 +723,7 @@ export const SchoolDashboard = () => {
                       color: '#aaa',
                       letterSpacing: '.09em',
                       marginBottom: 12,
+                      marginTop: 16,
                     }}
                   >
                     OS 12 INDICADORES EMOCIONAIS (ÚLTIMA ANÁLISE)
@@ -787,8 +911,9 @@ export const SchoolDashboard = () => {
             }}
           >
             <span>
-              🤖 Sínteses clínicas geradas pelo Claude Sonnet para orientação
-              exclusiva da equipe psicopedagógica.
+              🤖 Sínteses clínicas, sinais de alerta, fatores protetivos e
+              recomendações geradas pelo Claude Sonnet para orientação exclusiva
+              da equipe psicopedagógica.
             </span>
             <div style={{ display: 'flex', gap: 5 }}>
               {[
@@ -906,6 +1031,8 @@ export const SchoolDashboard = () => {
                     Interpretação não disponível para esta entrada.
                   </div>
                 )}
+
+                <ClinicalParametersBlock entry={e} />
               </div>
             ))
           )}
@@ -1126,6 +1253,7 @@ export const SchoolDashboard = () => {
                   </div>
                 </>
               )}
+              <ClinicalParametersBlock entry={selEntry} />
               <div
                 style={{
                   marginTop: 14,
@@ -1259,16 +1387,7 @@ export const SchoolDashboard = () => {
                           {s.latest.aiText}
                         </div>
                       )}
-                      <div
-                        style={{
-                          fontSize: 12,
-                          color: '#dc2626',
-                          fontWeight: 600,
-                        }}
-                      >
-                        → Recomendação: escuta ativa imediata com psicólogo
-                        escolar ou orientador.
-                      </div>
+                      <ClinicalParametersBlock entry={s.latest} />
                     </>
                   )}
                 </div>
