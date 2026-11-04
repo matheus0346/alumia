@@ -1,6 +1,6 @@
 import { RISK, URG } from '../../constants/indicators';
 import { iColor } from '../../utils/clinical';
-import logoImg from '../../assets/logo.png';
+import logoImg from '../../assets/alumia-logo.jpeg';
 
 export const Mn = ({ children, style: s = {} }) => (
   <span style={{ fontFamily: "'JetBrains Mono',monospace", ...s }}>
@@ -8,43 +8,20 @@ export const Mn = ({ children, style: s = {} }) => (
   </span>
 );
 
-export const Logo = ({ inv = false }) => (
-  <div style={{ display: 'flex', alignItems: 'center', gap: 9, flexShrink: 0 }}>
-    <div
+export const Logo = ({ inv = false, style = {} }) => (
+  <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, ...style }}>
+    <img
+      src={logoImg}
+      alt="ALUMIA"
       style={{
-        width: 30,
-        height: 30,
-        background: inv ? '#000' : '#fff',
-        borderRadius: 4,
-        overflow: 'hidden',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        height: 32,
+        width: 'auto',
+        maxWidth: 150,
+        objectFit: 'contain',
+        display: 'block',
+        filter: inv ? 'invert(1)' : 'none',
       }}
-    >
-      <img
-        src={logoImg}
-        alt="ALUMIA Logo"
-        style={{
-          width: '100%',
-          height: '100%',
-          objectFit: 'contain',
-          transform: 'scale(1.3)',
-          filter: inv ? 'invert(1)' : 'none',
-        }}
-      />
-    </div>
-    <span
-      style={{
-        fontFamily: "'Syne',sans-serif",
-        fontSize: 15,
-        fontWeight: 700,
-        color: inv ? '#000' : '#fff',
-        letterSpacing: '-.02em',
-      }}
-    >
-      ALUMIA
-    </span>
+    />
   </div>
 );
 
