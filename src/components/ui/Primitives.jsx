@@ -1,6 +1,6 @@
 import { RISK, URG } from '../../constants/indicators';
 import { iColor } from '../../utils/clinical';
-import logoImg from '../../assets/alumia-logo.jpeg';
+import logoImg from '../../assets/alumia-logo.png';
 
 export const Mn = ({ children, style: s = {} }) => (
   <span style={{ fontFamily: "'JetBrains Mono',monospace", ...s }}>
