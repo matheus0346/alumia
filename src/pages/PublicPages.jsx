@@ -904,40 +904,44 @@ export const Team = () => (
       >
         {[
           {
-            name: 'Ana Ferreira',
-            role: 'CEO & Co-fundadora',
-            desc: 'Pedagoga com 12 anos em educação pública. Idealizou o ALUMIA após testemunhar como problemas emocionais destroem trajetórias acadêmicas.',
+            name: 'Tiago Maior',
+            role: 'CEO e Idealizador da AlumIA',
           },
           {
-            name: 'Lucas Martins',
-            role: 'CTO & Co-fundador',
-            desc: 'Engenheiro de IA especializado em NLP aplicado à saúde mental. Desenvolveu os modelos de análise emocional do sistema.',
+            name: 'Henrique',
+            role: 'CEO e CMO',
           },
           {
-            name: 'Dra. Carla Souza',
-            role: 'Diretora de Psicologia',
-            desc: 'Psicóloga especialista em saúde mental adolescente. Coordena a validação científica dos indicadores e protocolos de intervenção.',
+            name: 'Davi Lorenzo',
+            role: 'CFO',
           },
           {
-            name: 'Rafael Costa',
-            role: 'Head de Produto',
-            desc: 'Designer de produto focado em EdTech. Responsável pela UX que equilibra simplicidade visual com profundidade funcional.',
+            name: 'Bento Cruvinel',
+            role: 'Controller',
           },
           {
-            name: 'Beatriz Alves',
-            role: 'Head Jurídico & LGPD',
-            desc: 'Advogada especialista em proteção de dados. Garante conformidade integral com a LGPD em todas as decisões técnicas.',
+            name: 'Daniel Virlei',
+            role: 'Marketing / Influenciador Interno',
           },
           {
-            name: 'Thiago Nunes',
-            role: 'Head de Parcerias',
-            desc: 'Ex-diretor educacional da rede estadual. Conecta o ALUMIA com secretarias e redes de ensino em todo o Brasil.',
+            name: 'Marco Túlio',
+            role: 'CRDO',
           },
-        ].map(({ name, role, desc }, i) => (
+          {
+            name: 'Matheus',
+            role: 'Desenvolvedor Full-Stack',
+          },
+        ].map(({ name, role }) => (
           <div
-            key={i}
+            key={name}
             className="hc"
-            style={{ padding: 20, border: '1px solid #e8e8e8' }}
+            style={{
+              padding: 20,
+              minHeight: 142,
+              border: '1px solid #e8e8e8',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
           >
             <div
               style={{
@@ -973,14 +977,11 @@ export const Team = () => (
                 color: '#aaa',
                 letterSpacing: '.04em',
                 textTransform: 'uppercase',
-                marginBottom: 8,
+                lineHeight: 1.5,
               }}
             >
               {role}
             </div>
-            <p style={{ fontSize: 13, color: '#666', lineHeight: 1.7 }}>
-              {desc}
-            </p>
           </div>
         ))}
       </div>
