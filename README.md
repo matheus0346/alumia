@@ -4,6 +4,12 @@ Plataforma educacional para identificação precoce de sofrimento emocional em e
 
 ---
 
+## Planejamento do produto
+
+- [Lumi — mascote e assistente de IA](docs/planejamento-lumi.md): proposta inicial, etapas de implementação, critérios de aceite e decisões em aberto.
+
+---
+
 ## 🚀 Tecnologias
 
 - **React 18**
