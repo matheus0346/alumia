@@ -1,0 +1,56 @@
+name: Backend checks
+
+on:
+  push:
+    paths: ['backend/**', '.github/workflows/backend.yml']
+  pull_request:
+    paths: ['backend/**', '.github/workflows/backend.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: alumia_test
+          POSTGRES_PASSWORD: test-only-password
+          POSTGRES_DB: alumia_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd="pg_isready -U alumia_test -d alumia_test"
+          --health-interval=5s --health-timeout=5s --health-retries=10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, dom, xml, pdo_pgsql, pdo_sqlite
+          tools: composer:v2
+          coverage: none
+      - run: composer install --no-interaction --prefer-dist --no-progress
+      - run: composer validate --strict
+      - run: composer lint
+      - name: SQLite tests
+        run: composer test
+      - name: Create isolated test schema
+        run: psql -h 127.0.0.1 -U alumia_test -d alumia_test -v ON_ERROR_STOP=1 -c 'CREATE SCHEMA alumia_testing'
+        env:
+          PGPASSWORD: test-only-password
+      - name: PostgreSQL tests
+        run: composer test
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_DATABASE: alumia_test
+          DB_USERNAME: alumia_test
+          DB_PASSWORD: test-only-password
+          DB_SCHEMA: alumia_testing
+          DB_SSLMODE: disable

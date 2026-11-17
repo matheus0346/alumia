@@ -24,3 +24,11 @@ dist-ssr
 *.sw?
 .env
 .env.local
+
+# Laravel: dependências, segredos e estado local
+/backend/.env*
+!/backend/.env.example
+/backend/vendor/
+/backend/.phpunit.cache/
+/backend/.phpunit.result.cache
+/backend/database/*.sqlite*

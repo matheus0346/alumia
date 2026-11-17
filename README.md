@@ -1,11 +1,15 @@
 # ALUMIA - Plataforma de Bem-Estar Escolar com IA
 
-Plataforma educacional para identificação precoce de sofrimento emocional em estudantes de forma anônima, segura e em conformidade com a LGPD (Lei 13.709/2018).
+Plataforma de apoio ao acompanhamento socioemocional escolar. O frontend atual é um protótipo com dados demonstrativos; o backend do piloto está em construção. Não oferece diagnóstico nem substitui profissionais.
 
 ---
 
 ## Planejamento do produto
 
+- [Especificação consolidada](docs/SPEC_ALUMIA.md): requisitos, tarefas ALU, dependências e critérios de aceite para os agentes.
+- [Arquitetura do piloto](docs/arquitetura-piloto.md): React + Laravel + Supabase Free, orçamento e condições de hospedagem.
+- [Backend inicial](docs/backend-inicial.md): instalação, conexão PostgreSQL/Supabase e verificações.
+- [Auditoria inicial](docs/auditoria-inicial.md): implementação existente, lacunas e limites da validação.
 - [Lumi — mascote e assistente de IA](docs/planejamento-lumi.md): proposta inicial, etapas de implementação, critérios de aceite e decisões em aberto.
 
 ---
@@ -16,12 +20,16 @@ Plataforma educacional para identificação precoce de sofrimento emocional em e
 - **Vite**
 - **Recharts** (Gráficos e visualização de dados)
 - **Persistência Local (LocalStorage)** com suporte ao ecossistema Claude Artifacts
+- **Laravel 13 / PHP 8.3+** em `backend/`, ainda separado dos fluxos React.
+- **PostgreSQL**, com configuração preparada para schema privado no Supabase.
 
 ---
 
 ## 🔑 Acessos de Demonstração (Demo)
 
 O projeto já vem com dados de exemplo pré-carregados para facilitar testes e apresentações:
+
+**Somente demonstração:** esses acessos são verificados no navegador e não podem ser usados para coletar dados reais de estudantes. Eles não são contas criadas no novo backend.
 
 | Perfil | Identificador / E-mail | Senha / Token | O que permite testar |
 | :--- | :--- | :--- | :--- |
