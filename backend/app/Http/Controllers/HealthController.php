@@ -14,6 +14,9 @@ class HealthController extends Controller
         try {
             DB::connection()->select('select 1');
             $ready = Schema::hasTable('schools')
+                && Schema::hasTable('users')
+                && Schema::hasTable('students')
+                && Schema::hasTable('credential_events')
                 && Schema::hasTable('sessions')
                 && Schema::hasTable('cache')
                 && Schema::hasTable('cache_locks');

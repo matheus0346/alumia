@@ -9,6 +9,8 @@ Plataforma de apoio ao acompanhamento socioemocional escolar. O frontend atual �
 - [Especificação consolidada](docs/SPEC_ALUMIA.md): requisitos, tarefas ALU, dependências e critérios de aceite para os agentes.
 - [Arquitetura do piloto](docs/arquitetura-piloto.md): React + Laravel + Supabase Free, orçamento e condições de hospedagem.
 - [Backend inicial](docs/backend-inicial.md): instalação, conexão PostgreSQL/Supabase e verificações.
+- [Acessos do backend](docs/acessos-backend.md): autenticação institucional, tokens de estudantes, permissões e contrato da API; React ainda não integrado.
+- [Supabase do piloto](docs/supabase-piloto.md): projeto existente, configuração privada e verificação segura da conexão.
 - [Auditoria inicial](docs/auditoria-inicial.md): implementação existente, lacunas e limites da validação.
 - [Lumi — mascote e assistente de IA](docs/planejamento-lumi.md): proposta inicial, etapas de implementação, critérios de aceite e decisões em aberto.
 

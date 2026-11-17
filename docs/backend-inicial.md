@@ -2,6 +2,8 @@
 
 Data: 17/11/2026. Escopo desta entrega: fundação Laravel, sem autenticação do piloto e sem ligação do React à API.
 
+> Registro da primeira entrega. A autenticação foi acrescentada posteriormente e está descrita em [acessos-backend.md](acessos-backend.md). O React ainda não foi integrado; a configuração do projeto existente está em [supabase-piloto.md](supabase-piloto.md). As tabelas provisórias citadas abaixo foram substituídas pela migração de identidades.
+
 ## O que está disponível
 
 - Laravel 13 em `backend/`, com dependências fixadas em `composer.lock`.

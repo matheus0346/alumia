@@ -19,7 +19,7 @@ class HealthTest extends TestCase
             ->assertExactJson(['status' => 'ready'])
             ->assertHeader('Cache-Control', 'no-store, private');
 
-        Schema::drop('schools');
+        Schema::drop('cache');
 
         $this->getJson('/api/v1/health')
             ->assertStatus(503)

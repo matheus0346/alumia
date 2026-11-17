@@ -11,6 +11,7 @@
 - Stack adotada: React + Laravel + PostgreSQL no Supabase Free; consultar `docs/arquitetura-piloto.md`.
 - Auditoria inicial: `docs/auditoria-inicial.md`; não repetir verificações já registradas sem mudança ou motivo. Completar a homologação ainda pendente.
 - Fundação Laravel e testes já implementados: `docs/backend-inicial.md`. Isso não conclui as tarefas de autenticação, permissões, avaliações ou Lumi.
+- API de autenticação e permissões mínimas implementada e testada: `docs/acessos-backend.md`. Conexão Supabase e integração React pendentes; isso não declara concluídas as condições operacionais de liberação.
 - Esta decisão tecnológica atualiza a orientação genérica de não escolher stack antes da auditoria. Os requisitos de produto e de liberação continuam válidos.
 
 ## 1. Objetivo

@@ -8,7 +8,7 @@ Leia `../docs/arquitetura-piloto.md` e a issue antes de alterar o backend.
 - Não adicionar cadastro público ou recuperação pública de senha institucional.
 - Autorização por escola deve existir no servidor antes de expor dados.
 - Não incluir tokens, senhas, textos sensíveis ou chaves em logs ou exemplos reais.
-- O modelo User do skeleton é infraestrutura interna provisória: não representa estudantes nem uma definição aprovada dos perfis institucionais. Substituir seu contrato na tarefa de autenticação.
+- User representa identidades institucionais `admin`/`school`; Student é a identidade estudantil separada. Ler `../docs/acessos-backend.md`. Não reintroduzir nome/e-mail de aluno ou recuperação pública de credenciais.
 - Não incluir dados demonstrativos no seeder padrão.
 - Não executar migrações no Supabase ou publicar sem a etapa autorizada de implantação.
 - Para validar: `composer validate --strict`, `composer lint` e `composer test`.
