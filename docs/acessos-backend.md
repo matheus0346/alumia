@@ -1,6 +1,6 @@
 # Acessos reais do backend — contrato e validação
 
-Data: 17/11/2026. Estado: API implementada e testada localmente; React e projeto Supabase ainda não integrados. Esta entrega não libera o piloto.
+Data: 17/11/2026. Estado: API implementada e testada localmente; React integrado aos acessos conforme `integracao-react.md`; conexão de execução Laravel/Supabase ainda pendente. Esta entrega não libera o piloto.
 
 ## Matriz técnica mínima
 
@@ -45,7 +45,7 @@ O comando solicita a senha de forma oculta, não aceita senha em argumento e nã
 
 ## Contrato HTTP
 
-Todas as rotas abaixo usam a mesma origem da aplicação. Enviar `Accept: application/json`. Mutações exigem cookie de sessão e `X-CSRF-TOKEN`, obtido pela rota de CSRF. No futuro cliente React, manter CSRF somente em memória e usar `credentials: 'same-origin'`; não salvar tokens de sessão no armazenamento local.
+Todas as rotas abaixo usam a mesma origem da aplicação. Enviar `Accept: application/json`. Mutações exigem cookie de sessão e `X-CSRF-TOKEN`, obtido pela rota de CSRF. No cliente React, manter CSRF somente em memória e usar `credentials: 'same-origin'`; não salvar tokens de sessão no armazenamento local.
 
 | Método e rota | Entrada / resultado |
 | --- | --- |
@@ -90,7 +90,7 @@ Os testes usam dados sintéticos. Não representam homologação com estudantes,
 ## Pendências
 
 1. Autorizar conexão ao projeto Supabase existente e configurar schema e segredos localmente.
-2. Integrar o React com estes endpoints, substituindo os logins e o armazenamento demonstrativos.
+2. Validar em homologação o React integrado, conforme `integracao-react.md`.
 3. Definir políticas de token, verificação de redefinição e perfis profissionais antes do piloto.
 4. Implementar avaliações, resultados e controles de dados; homologar hospedagem.
 

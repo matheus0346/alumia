@@ -5,7 +5,7 @@ Data: 17/11/2026. Projeto existente informado pelo responsável:
 - Referência pública: `gnylrgobjsecphldkkfv`.
 - URL pública do serviço: `https://gnylrgobjsecphldkkfv.supabase.co`.
 - Plano pretendido: Free. Ainda não verificado na conta.
-- Estado desta entrega: integração ao serviço pendente de instalação/conexão; nenhum SQL executado no projeto.
+- Estado verificado: integração Codex autenticada; projeto AlumIA em `ACTIVE_HEALTHY`, região `ca-central-1`, PostgreSQL 17. Consulta `SELECT 1` concluída com sucesso. Consulta a `information_schema.tables` não encontrou tabelas de aplicação em `public` ou `alumia`. Advisor de segurança sem achados nesta consulta; isso não valida uma aplicação ainda não implantada.
 
 Essa URL identifica a API do projeto. **Não é o host PostgreSQL** que deve ser copiado para `DB_HOST`.
 
@@ -23,7 +23,7 @@ CREATE SCHEMA IF NOT EXISTS alumia;
 
 6. Confirmar que o schema não está exposto à Data API. Se a aplicação não usar essa API, desabilitá-la, conforme a arquitetura adotada.
 
-As instruções acima não foram aplicadas na nuvem por esta entrega. Inspecionar tabelas, grants e dados existentes antes de executar mudanças; não apagar ou sobrescrever um projeto já utilizado.
+Somente consultas de leitura foram executadas na nuvem nesta entrega. Schema, privilégios e migrações ainda não foram aplicados. Inspecionar tabelas, grants e dados existentes antes de executar mudanças; não apagar ou sobrescrever um projeto já utilizado.
 
 ## Verificação sem revelar credenciais
 
@@ -50,8 +50,7 @@ Não rodar PHPUnit, `migrate:fresh` ou `migrate:rollback` no projeto dos partici
 
 ## O que ainda precisa da conta do responsável
 
-- Confirmar acesso ao projeto correto e seus recursos existentes.
-- Verificar plano, região e disponibilidade.
+- Acesso, região e disponibilidade verificados pela integração. Confirmar o plano Free na conta.
 - Preparar schema, privilégios e exposição da API.
 - Configurar segredos e executar as migrações autorizadas.
 - Criar o administrador inicial em terminal confiável com entrada oculta.

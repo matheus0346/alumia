@@ -1,6 +1,6 @@
 # ALUMIA - Plataforma de Bem-Estar Escolar com IA
 
-Plataforma de apoio ao acompanhamento socioemocional escolar. O frontend atual é um protótipo com dados demonstrativos; o backend do piloto está em construção. Não oferece diagnóstico nem substitui profissionais.
+Plataforma de apoio ao acompanhamento socioemocional escolar. O React padrão usa a API Laravel para acessos; avaliações e IA do piloto estão em construção. A demonstração antiga permanece em modo separado. Não oferece diagnóstico nem substitui profissionais.
 
 ---
 
@@ -9,7 +9,7 @@ Plataforma de apoio ao acompanhamento socioemocional escolar. O frontend atual �
 - [Especificação consolidada](docs/SPEC_ALUMIA.md): requisitos, tarefas ALU, dependências e critérios de aceite para os agentes.
 - [Arquitetura do piloto](docs/arquitetura-piloto.md): React + Laravel + Supabase Free, orçamento e condições de hospedagem.
 - [Backend inicial](docs/backend-inicial.md): instalação, conexão PostgreSQL/Supabase e verificações.
-- [Acessos do backend](docs/acessos-backend.md): autenticação institucional, tokens de estudantes, permissões e contrato da API; React ainda não integrado.
+- [Acessos do backend](docs/acessos-backend.md): autenticação institucional, tokens de estudantes, permissões e contrato da API.
 - [Supabase do piloto](docs/supabase-piloto.md): projeto existente, configuração privada e verificação segura da conexão.
 - [Auditoria inicial](docs/auditoria-inicial.md): implementação existente, lacunas e limites da validação.
 - [Lumi — mascote e assistente de IA](docs/planejamento-lumi.md): proposta inicial, etapas de implementação, critérios de aceite e decisões em aberto.
@@ -21,11 +21,15 @@ Plataforma de apoio ao acompanhamento socioemocional escolar. O frontend atual �
 - **React 18**
 - **Vite**
 - **Recharts** (Gráficos e visualização de dados)
-- **Persistência Local (LocalStorage)** com suporte ao ecossistema Claude Artifacts
-- **Laravel 13 / PHP 8.3+** em `backend/`, ainda separado dos fluxos React.
+- **Sessões no servidor** e API de mesma origem; armazenamento local apenas na demonstração
+- **Laravel 13 / PHP 8.3+** em `backend/`, integrado ao React nos fluxos de acesso.
 - **PostgreSQL**, com configuração preparada para schema privado no Supabase.
 
 ---
+
+## Integração e execução
+
+Veja [React + Laravel](docs/integracao-react.md) para executar a aplicação integrada. O backend precisa de configuração privada do banco; a integração Supabase do Codex não configura o Laravel automaticamente.
 
 ## 🔑 Acessos de Demonstração (Demo)
 
@@ -52,36 +56,13 @@ O projeto já vem com dados de exemplo pré-carregados para facilitar testes e a
 
 2. Inicie o servidor de desenvolvimento:
    ```bash
-   npm run dev
+   npm run dev:demo
    ```
 
 3. Abra o navegador no endereço indicado (normalmente `http://localhost:5173`).
 
 ---
 
-## 🌐 Como Hospedar no GitHub Pages
+## Publicação
 
-Este repositório já possui uma automação configurada via **GitHub Actions** em `.github/workflows/deploy.yml`.
-
-1. Suba o código para o seu repositório no GitHub:
-   ```bash
-   git add .
-   git commit -m "feat: initial commit Alumia"
-   git branch -M main
-   git remote add origin https://github.com/SEU_USUARIO/alumia.git
-   git push -u origin main
-   ```
-2. No GitHub, acesse a aba **Settings** do seu repositório.
-3. No menu lateral esquerdo, clique em **Pages**.
-4. Em **Build and deployment > Source**, selecione **GitHub Actions**.
-5. Pronto! Em cerca de 1 a 2 minutos o site estará online no endereço:
-   `https://SEU_USUARIO.github.io/alumia/`
-
----
-
-## ⚡ Como Hospedar na Vercel (Alternativa em 1 clique)
-
-1. Acesse [vercel.com](https://vercel.com) e faça login com sua conta do GitHub.
-2. Clique em **Add New... > Project**.
-3. Selecione o repositório `alumia` e clique em **Deploy**.
-4. O Vercel detecta o Vite automaticamente e publica em segundos!
+O workflow de GitHub Pages executa `npm run build:demo`, publicando somente a demonstração estática identificada. O piloto usa React e Laravel na mesma origem, conforme [arquitetura adotada](docs/arquitetura-piloto.md); sua hospedagem ainda precisa ser preparada. Não publicar o build do piloto como site estático isolado.
