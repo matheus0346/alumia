@@ -32,3 +32,6 @@ dist-ssr
 /backend/.phpunit.cache/
 /backend/.phpunit.result.cache
 /backend/database/*.sqlite*
+
+# Build React servido pelo Laravel
+/backend/public/app/

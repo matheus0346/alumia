@@ -1,0 +1,53 @@
+.pilot, .pilot-password, .pilot-dialog { color: #171717; background: #f6f6f4; }
+.pilot h1, .pilot-password h1 { font-family: 'Syne', sans-serif; font-size: clamp(28px, 4vw, 42px); line-height: 1.2; margin: 10px 0 16px; }
+.pilot h2, .pilot-password h2, .pilot-dialog h2 { font-family: 'Syne', sans-serif; font-size: 21px; margin-bottom: 18px; }
+.pilot h3 { font-size: 15px; line-height: 1.5; }
+.pilot p, .pilot-password p, .pilot-dialog p { font-size: 14px; line-height: 1.7; margin-bottom: 18px; }
+.pilot button, .pilot-password button, .pilot-dialog button, .pilot-notice button { border: 1px solid #aaa; border-radius: 6px; padding: 10px 14px; font-weight: 600; font-size: 13px; cursor: pointer; background: #fff; color: #171717; }
+.pilot button:disabled, .pilot-password button:disabled, .pilot-dialog button:disabled { opacity: .5; cursor: wait; }
+.pilot button:hover:not(:disabled), .pilot-password button:hover:not(:disabled), .pilot-dialog button:hover:not(:disabled) { background: #eee; }
+.pilot :focus-visible, .pilot-dialog :focus-visible, .pilot-password :focus-visible, .pilot-notice :focus-visible { outline: 3px solid #376fc3; outline-offset: 3px; }
+.pilot button.pilot-primary, .pilot-password button.pilot-primary, .pilot-dialog button.pilot-primary { background: #171717; color: #fff; border-color: #171717; }
+.pilot-header { background: #fff; border-bottom: 1px solid #ddd; min-height: 80px; padding: 18px max(5%, calc((100% - 1200px) / 2)); display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.pilot-header > div:last-child { display: flex; align-items: center; gap: 20px; font-size: 12px; color: #555; }
+.pilot-main { max-width: 1240px; padding: 48px 24px 80px; margin: auto; min-height: calc(100vh - 80px); }
+.pilot-eyebrow { letter-spacing: .13em; font: 11px 'JetBrains Mono', monospace !important; color: #555; }
+.pilot-intro { max-width: 740px; color: #555; }
+.pilot-grid { display: grid; grid-template-columns: minmax(260px, .8fr) minmax(0, 1.6fr); gap: 24px; align-items: start; margin-top: 32px; }
+.pilot-card { padding: 28px; border: 1px solid #dededb; background: #fff; border-radius: 12px; min-width: 0; }
+.pilot-field { display: block; margin: 18px 0; font-size: 13px; font-weight: 600; }
+.pilot-field > span { display: block; margin-bottom: 8px; }
+.pilot-field input { display: block; background: #fff; border: 1px solid #aaa; border-radius: 6px; width: 100%; padding: 12px; color: #171717; font-size: 16px; line-height: 1.4; }
+.pilot-field small { color: #9a1515; }
+.pilot-error { padding: 12px 16px; color: #871b1b; background: #fff2f2; border: 1px solid #dfabab; border-radius: 6px; }
+.pilot-muted { font-size: 12px !important; color: #626262; }
+.pilot-empty { padding: 26px 0; color: #666; }
+.pilot-section-heading, .pilot-dialog-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+.pilot-section-heading button { font-size: 12px; }
+.pilot-records { list-style: none; }
+.pilot-records li { padding: 20px 0; border-top: 1px solid #e5e5e5; }
+.pilot-records li > div:first-child { display: flex; justify-content: space-between; align-items: start; gap: 12px; overflow-wrap: anywhere; }
+.pilot-status { background: #eaf3ed; color: #245b36; padding: 4px 8px; border-radius: 4px; font-size: 11px; white-space: nowrap; }
+.pilot-inactive { background: #f4ebeb; color: #853a3a; }
+.pilot-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+.pilot-secret { padding: 24px; background: #fdf8e9; border: 1px solid #cfba74; border-radius: 10px; margin: 24px 0; }
+.pilot-secret code { display: block; font: 15px 'JetBrains Mono', monospace; overflow-wrap: anywhere; user-select: all; background: #fff; padding: 16px; border: 1px solid #ded6bc; margin-bottom: 18px; }
+.pilot-secret h2 { margin-bottom: 12px; }
+.pilot-confirm { background: #fafafa; border: 1px solid #ddd; padding: 16px; border-radius: 6px; width: 100%; }
+.pilot-confirm p { margin: 0; }
+.pilot-pagination { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 20px; font-size: 12px; }
+.pilot-upcoming { margin-top: 32px; padding-top: 24px; border-top: 1px solid #eee; }
+.pilot-upcoming p { margin: 8px 0 0; color: #626262; }
+.pilot-student { max-width: 760px; margin-top: 32px; }
+.pilot-password, .pilot-loading { min-height: 100vh; display: grid; place-items: center; padding: 24px; }
+.pilot-password > div { max-width: 520px; width: 100%; }
+.pilot-password .pilot-secondary { margin-top: 18px; }
+.pilot-dialog { border: 1px solid #ccc; border-radius: 12px; padding: 28px; max-width: 500px; width: calc(100% - 32px); max-height: calc(100vh - 40px); overflow: auto; margin: auto; }
+.pilot-dialog::backdrop { background: #0009; }
+.pilot-tabs { display: flex; gap: 8px; margin: 24px 0; }
+.pilot-tabs button { flex: 1; }
+.pilot-tabs button[aria-pressed=true] { background: #171717; color: #fff; border-color: #171717; }
+.pilot-dialog .pilot-primary { width: 100%; }
+.pilot-notice { display: flex; justify-content: space-between; align-items: center; gap: 18px; padding: 16px 5%; background: #f7f1df; border-bottom: 1px solid #d6c792; font-size: 13px; line-height: 1.6; }
+@media(max-width: 760px) { .pilot-grid { grid-template-columns: 1fr; } .pilot-main { padding: 30px 16px 60px; } .pilot-card { padding: 22px; } .pilot-header { padding: 16px; } .pilot-header > div:last-child { gap: 12px; } .pilot-header span { max-width: 110px; } .pilot-records li > div:first-child { flex-direction: column; } }
+@media(prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }

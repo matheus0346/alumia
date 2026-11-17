@@ -50,8 +50,10 @@ class HealthTest extends TestCase
 
     public function test_root_does_not_publish_the_legacy_demo_as_the_pilot(): void
     {
+        config(['frontend.path' => storage_path('framework/testing/missing-frontend')]);
+
         $this->getJson('/')
             ->assertStatus(503)
-            ->assertExactJson(['status' => 'implementation_in_progress']);
+            ->assertExactJson(['status' => 'frontend_not_built']);
     }
 }
