@@ -906,32 +906,39 @@ export const Team = () => (
           {
             name: 'Tiago Maior',
             role: 'CEO e Idealizador da AlumIA',
+            description: 'Conduz a visão da AlumIA e transforma ideias em soluções para o bem-estar escolar.',
           },
           {
             name: 'Henrique',
             role: 'CEO e CMO',
+            description: 'Conecta estratégia e comunicação para ampliar o alcance da AlumIA nas escolas.',
           },
           {
             name: 'Davi Lorenzo',
             role: 'CFO',
+            description: 'Cuida do planejamento financeiro e da sustentabilidade do projeto.',
           },
           {
             name: 'Bento Cruvinel',
             role: 'Controller',
+            description: 'Acompanha recursos e processos para apoiar uma gestão organizada e eficiente.',
           },
           {
             name: 'Daniel Virlei',
             role: 'Marketing / Influenciador Interno',
+            description: 'Dá voz à AlumIA com conteúdos que aproximam o projeto da comunidade escolar.',
           },
           {
             name: 'Marco Túlio',
             role: 'CRDO',
+            description: 'Contribui para a evolução da AlumIA, explorando ideias e oportunidades de melhoria.',
           },
           {
             name: 'Matheus',
             role: 'Desenvolvedor Full-Stack',
+            description: 'Desenvolve a plataforma, conectando tecnologia e uma experiência simples de usar.',
           },
-        ].map(({ name, role }) => (
+        ].map(({ name, role, description }) => (
           <div
             key={name}
             className="hc"
@@ -982,6 +989,16 @@ export const Team = () => (
             >
               {role}
             </div>
+            <p
+              style={{
+                fontSize: 12,
+                color: '#666',
+                lineHeight: 1.7,
+                margin: '12px 0 0',
+              }}
+            >
+              {description}
+            </p>
           </div>
         ))}
       </div>
