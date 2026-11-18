@@ -10,6 +10,8 @@ export default defineConfig(({ mode, command }) => {
     } }],
     resolve: { alias: { '#application': fileURLToPath(new URL(demo ? './src/DemoApp.jsx' : './src/pilot/PilotApp.jsx', import.meta.url)) } },
     base: command === 'build' ? (demo ? './' : '/app/') : '/',
+    // Preserve the Vite 5 syntax target during this toolchain upgrade.
+    build: { target: ['es2020', 'edge88', 'firefox78', 'chrome87', 'safari14'] },
     server: { proxy: { '/api': { target: 'http://127.0.0.1:8000' } } },
   };
 });

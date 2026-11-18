@@ -37,7 +37,7 @@ flowchart LR
 | --- | --- |
 | `.github/workflows/backend.yml` | CI completa em push, PR, acionamento manual e chamada reutilizável; sem filtros de caminho |
 | CI / Workflow lint | actionlint fixado em versão e SHA256, validando os workflows |
-| CI / Frontend tests and builds | instalação pelo lockfile, auditoria de runtime (bloqueia high/critical), testes e builds separados de piloto e demonstração |
+| CI / Frontend tests and builds | instalação pelo lockfile, auditoria completa, incluindo ferramentas (bloqueia high/critical), testes e builds separados de piloto e demonstração |
 | CI / Backend SQLite and PostgreSQL | Composer validate/audit, Pint e PHPUnit nos dois bancos; PostgreSQL descartável |
 | CI / CI required | só passa quando as três validações anteriores passam; falha ou cancelamento não libera o check |
 | `.github/workflows/deploy.yml` | Pages somente manual e na main; chama a CI completa antes de construir e publicar um artefato marcado como demo |
@@ -65,9 +65,9 @@ Essas regras de conta não são criadas apenas ao versionar YAML. Sua ativação
 
 | ID | Entrega e aceite | Estado |
 | --- | --- | --- |
-| OPS-001 | Documentação, regras dos agentes, template de PR e CI sem acesso real | Implementada nos arquivos desta etapa; validar na CI remota |
+| OPS-001 | Documentação, regras dos agentes, template de PR e CI sem acesso real | Validada na CI remota de push e PR em 18/11/2026 |
 | OPS-002 | Ativar proteção da main e revisar permissões depois do primeiro PR verde | Pendente de configuração da conta |
-| OPS-007 | Atualizar Vite/plugin e cadeia de build, corrigir os achados de ferramentas e repetir auditoria completa e os dois builds | Pendente; resolver antes de hospedar o piloto |
+| OPS-007 | Atualizar Vite/plugin e cadeia de build, corrigir os achados de ferramentas e repetir auditoria completa e os dois builds | Atualização implementada em OPS-007; testes e builds locais passaram; conferir a CI remota desta entrega |
 | OPS-003 | Container React/Laravel com servidor HTTP apropriado, build reproduzível e health checks; executar localmente e registrar evidências | Pendente; não tratar Dockerfile não testado como pronto |
 | OPS-004 | Homologação gratuita com dados sintéticos, segredos por ambiente, artefato por SHA e publicação manual serializada | Pendente da escolha e validação da hospedagem |
 | OPS-005 | Backup protegido, restauração em banco separado e recuperação de versão anterior ensaiadas | Pendente; requisito antes de alunos |
@@ -86,10 +86,22 @@ As regras são parte permanente deste repositório e precisam valer para qualque
 - [Opções do Dependabot](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference).
 - [Arquitetura e limites do piloto](arquitetura-piloto.md).
 
-## Verificação desta etapa e dívida de dependências
+## Verificação e atualização das dependências
 
 Validação local em 18/11/2026: actionlint 1.7.12 sem erros; 4 testes Node; builds piloto e demo; Composer validate e Pint; 27 testes Laravel em PostgreSQL local com 140 asserções; SQLite com 135 asserções e um teste exclusivo de PostgreSQL pulado. Smoke HTTP local passou com sessões, CSRF e revogação. Nenhum teste usou banco real.
 
-A auditoria completa npm apontou três pacotes com achados: Vite (high), source-map-js (high) e esbuild (moderate), na cadeia de ferramentas. `npm audit --omit=dev` e Composer audit não apontaram vulnerabilidades na consulta. A CI verifica runtime npm (high/critical bloqueiam) e a auditoria completa Composer; ela **não** declara a cadeia de build livre de vulnerabilidades. Atualizar essa cadeia em OPS-007, testar compatibilidade do plugin React e repetir os dois builds; não usar npm audit fix --force como atalho. Não expor o servidor de desenvolvimento à internet.
+A auditoria inicial completa npm apontou três pacotes com achados: Vite (high), source-map-js (high) e esbuild (moderate), na cadeia de ferramentas. `npm audit --omit=dev` e Composer audit não apontaram vulnerabilidades na consulta. A CI inicial verificava apenas runtime npm e a auditoria completa Composer. A atualização de OPS-007 descrita abaixo corrige essa dívida e amplia o check para as ferramentas. Não usar npm audit fix --force como atalho. Não expor o servidor de desenvolvimento à internet.
 
 Referências dos achados: [Vite](https://github.com/advisories/GHSA-4w7w-66w2-5vf9), [source-map-js](https://github.com/advisories/GHSA-68fv-2mgg-jv7q), [esbuild](https://github.com/advisories/GHSA-67mh-4wv8-2f99).
+
+### OPS-007 — ferramentas do frontend
+
+Atualizados Vite 5.4.21 para 8.3.8 e plugin React 4 para 6.3.0, com versões diretas exatas e lockfile renovado. React 18 e a separação entre piloto/demonstração permanecem. Requisito do projeto: Node 22.12+ na linha 22 (validado localmente com 22.23.5). A configuração simples do projeto não utiliza as opções antigas de esbuild/Rollup substituídas pelo novo bundler.
+
+A auditoria completa npm após a atualização retornou zero vulnerabilidades; os quatro testes do cliente e os dois builds passaram. A CI agora audita todas as dependências npm, incluindo ferramentas, e bloqueia high/critical. O relato acima dos três achados fica como histórico, não como dívida ainda aberta. Nenhuma auditoria garante ausência de vulnerabilidades futuras.
+
+[Guia oficial de migração do Vite](https://vite.dev/guide/migration).
+
+O alvo de sintaxe do build foi fixado explicitamente nos valores padrão anteriores do Vite 5 para evitar mudar esse requisito silenciosamente. Isso não substitui ensaio funcional nos navegadores dos participantes nem adiciona polyfills de APIs do navegador.
+
+Smoke HTTP local do Vite validou HTML, resolução do alias de aplicação e transformação JSX nos modos development e demo após instalação limpa.

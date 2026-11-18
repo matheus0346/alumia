@@ -45,8 +45,8 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - name: Audit runtime dependencies
-        run: npm audit --omit=dev --audit-level=high
+      - name: Audit all frontend dependencies
+        run: npm audit --audit-level=high
       - run: npm test
       - name: Build isolated pilot and sync with Laravel
         run: npm run build
