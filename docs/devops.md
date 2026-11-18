@@ -66,8 +66,8 @@ Essas regras de conta não são criadas apenas ao versionar YAML. Sua ativação
 | ID | Entrega e aceite | Estado |
 | --- | --- | --- |
 | OPS-001 | Documentação, regras dos agentes, template de PR e CI sem acesso real | Validada na CI remota de push e PR em 18/11/2026 |
-| OPS-002 | Ativar proteção da main e revisar permissões depois do primeiro PR verde | Pendente de configuração da conta |
-| OPS-007 | Atualizar Vite/plugin e cadeia de build, corrigir os achados de ferramentas e repetir auditoria completa e os dois builds | Atualização implementada em OPS-007; testes e builds locais passaram; conferir a CI remota desta entrega |
+| OPS-002 | Ativar proteção da main e revisar permissões depois do primeiro PR verde | Proteção da main ativa e permissões de Actions verificadas em 18/11/2026 |
+| OPS-007 | Atualizar Vite/plugin e cadeia de build, corrigir os achados de ferramentas e repetir auditoria completa e os dois builds | Vite/plugin atualizados; auditoria completa sem achados, builds e CI remota aprovados no PR #2 |
 | OPS-003 | Container React/Laravel com servidor HTTP apropriado, build reproduzível e health checks; executar localmente e registrar evidências | Pendente; não tratar Dockerfile não testado como pronto |
 | OPS-004 | Homologação gratuita com dados sintéticos, segredos por ambiente, artefato por SHA e publicação manual serializada | Pendente da escolha e validação da hospedagem |
 | OPS-005 | Backup protegido, restauração em banco separado e recuperação de versão anterior ensaiadas | Pendente; requisito antes de alunos |
@@ -105,3 +105,9 @@ A auditoria completa npm após a atualização retornou zero vulnerabilidades; o
 O alvo de sintaxe do build foi fixado explicitamente nos valores padrão anteriores do Vite 5 para evitar mudar esse requisito silenciosamente. Isso não substitui ensaio funcional nos navegadores dos participantes nem adiciona polyfills de APIs do navegador.
 
 Smoke HTTP local do Vite validou HTML, resolução do alias de aplicação e transformação JSX nos modos development e demo após instalação limpa.
+
+### OPS-002 — proteção efetiva no GitHub
+
+Em 18/11/2026, a API confirmou proteção da main com PR obrigatório, check `CI required` vinculado ao GitHub Actions (app 15368), branch atualizada antes do merge, conversas resolvidas, proibição de force push/exclusão e aplicação das regras também a administradores. Não se exige aprovação externa enquanto há mantenedor único; o PR e os checks continuam obrigatórios. As regras acima na seção de configuração descrevem a política e devem ser preservadas.
+
+O token padrão de Actions já estava em leitura, sem permissão para criar/aprovar PRs. O workflow de publicação continua manual e só permite main. Nenhuma execução de publicação foi acionada por esta etapa. A ativação destes workflows na branch padrão ocorre ao incorporar a integração pelo PR final.
