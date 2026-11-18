@@ -6,7 +6,7 @@ Data: 17/11/2026. Integração de acessos implementada; avaliações, indicadore
 
 `npm run dev` e `npm run build` selecionam `src/pilot/PilotApp.jsx`. O alias do Vite resolve apenas essa aplicação: o bundle padrão não importa o contexto, armazenamento, credenciais nem análise simulada da demonstração.
 
-`npm run dev:demo` e `npm run build:demo` selecionam explicitamente `src/DemoApp.jsx`. A demonstração tem aviso permanente e usa apenas dados fictícios. O workflow do GitHub Pages publica esse modo estático; não hospeda PHP nem constitui o piloto integrado.
+`npm run dev:demo` e `npm run build:demo` selecionam explicitamente `src/DemoApp.jsx`. A demonstração tem aviso permanente e usa apenas dados fictícios. O workflow manual do GitHub Pages exige a CI e publica esse modo estático a partir da main; não hospeda PHP nem constitui o piloto integrado.
 
 O build padrão gera `dist/build-mode.json`, verifica a ausência de código legado sensível e copia os arquivos para `backend/public/app/`, ignorados pelo Git. Laravel entrega o HTML em `/` somente com marcador `pilot`; um build ausente, inválido ou de demonstração retorna 503. Recursos estáticos ficam em `/app/assets/`. Não há fallback HTML para rotas `/api` inexistentes.
 

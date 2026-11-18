@@ -6,6 +6,10 @@ Plataforma de apoio ao acompanhamento socioemocional escolar. O React padrão us
 
 ## Planejamento do produto
 
+- [DevOps e entrega](docs/devops.md): fluxo de desenvolvimento, CI, publicação e próximas etapas.
+- [Como contribuir](CONTRIBUTING.md): branches, PRs e validação local.
+- [Operação](docs/operacao.md): publicação, migrações e recuperação.
+
 - [Especificação consolidada](docs/SPEC_ALUMIA.md): requisitos, tarefas ALU, dependências e critérios de aceite para os agentes.
 - [Arquitetura do piloto](docs/arquitetura-piloto.md): React + Laravel + Supabase Free, orçamento e condições de hospedagem.
 - [Backend inicial](docs/backend-inicial.md): instalação, conexão PostgreSQL/Supabase e verificações.
@@ -65,4 +69,4 @@ O projeto já vem com dados de exemplo pré-carregados para facilitar testes e a
 
 ## Publicação
 
-O workflow de GitHub Pages executa `npm run build:demo`, publicando somente a demonstração estática identificada. O piloto usa React e Laravel na mesma origem, conforme [arquitetura adotada](docs/arquitetura-piloto.md); sua hospedagem ainda precisa ser preparada. Não publicar o build do piloto como site estático isolado.
+O workflow de GitHub Pages é manual, restrito à `main`, exige a CI e executa `npm run build:demo`, publicando somente a demonstração estática identificada. O piloto usa React e Laravel na mesma origem, conforme [arquitetura adotada](docs/arquitetura-piloto.md); sua hospedagem ainda precisa ser preparada. Não publicar o build do piloto como site estático isolado.
