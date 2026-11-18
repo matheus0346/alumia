@@ -8,13 +8,13 @@
 
 ## Verificação local
 
-Requisitos: Node 22 (`.nvmrc`), PHP 8.3+, Composer e PostgreSQL descartável para a verificação completa do backend.
+Requisitos: Node 22.12+ na linha 22 (`.nvmrc`), PHP 8.3+, Composer e PostgreSQL descartável para a verificação completa do backend.
 
 Na raiz:
 
 ```bash
 npm ci
-npm audit --omit=dev --audit-level=high
+npm audit --audit-level=high
 npm test
 npm run build
 npm run build:demo
