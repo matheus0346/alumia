@@ -8,6 +8,14 @@ description: >-
 
 # ALUMIA — Refactoring, Alignment & Maintenance Skill
 
+> Atualização do piloto (17/11/2026): ler `docs/arquitetura-piloto.md`,
+> `docs/backend-inicial.md` e as instruções de `backend/AGENTS.md`.
+> As referências abaixo descrevem o protótipo legado. Não reproduzir acesso
+> exclusivamente no navegador, chaves `VITE_*`, anonimato absoluto ou fallback
+> clínico como requisitos da versão do piloto. Seguir o roteiro consolidado e
+> a decisão React + Laravel + PostgreSQL; preservar a demonstração enquanto a
+> integração real é implementada, sem liberá-la para dados reais.
+
 This skill guides the agent in refactoring, aligning, and maintaining **ALUMIA**, an anonymous school emotional well-being platform where students write weekly diary entries and **Claude Sonnet** analyzes the text across **12 emotional indicators**, providing clinical interpretations, warning signs, protective factors, school recommendations, and visual charts exclusively to school professionals (psychologists/counselors/coordinators).
 
 ## Core Domain Rules & Product Alignment

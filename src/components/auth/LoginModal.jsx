@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ADMIN_EMAIL, ADMIN_HASH } from '../../constants/indicators';
+import { ADMIN_EMAIL, ADMIN_HASH } from '../../constants/demoCredentials';
 import { hash, genPhrase } from '../../utils/crypto';
 import { useApp } from '../../context/AppContext';
 import { ModalWrap, Fld, Btn, Inf, Sp } from '../ui/Primitives';
