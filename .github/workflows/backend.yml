@@ -1,17 +1,62 @@
-name: Backend checks
+name: CI
 
 on:
   push:
-    paths: ['backend/**', '.github/workflows/backend.yml']
   pull_request:
-    paths: ['backend/**', '.github/workflows/backend.yml']
+  workflow_call:
+  workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  workflow-lint:
+    name: Workflow lint
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Install verified actionlint
+        run: |
+          curl --fail --silent --show-error --location --retry 3 \
+            https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz \
+            --output "$RUNNER_TEMP/actionlint.tar.gz"
+          printf '%s  %s\n' '8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8' "$RUNNER_TEMP/actionlint.tar.gz" | sha256sum --check
+          tar -xzf "$RUNNER_TEMP/actionlint.tar.gz" -C "$RUNNER_TEMP" actionlint
+      - name: Validate workflows
+        run: '"$RUNNER_TEMP/actionlint" -color'
+
+  frontend:
+    name: Frontend tests and builds
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Audit runtime dependencies
+        run: npm audit --omit=dev --audit-level=high
+      - run: npm test
+      - name: Build isolated pilot and sync with Laravel
+        run: npm run build
+      - name: Build demonstration separately
+        run: npm run build:demo
+
   backend:
-    runs-on: ubuntu-latest
+    name: Backend SQLite and PostgreSQL
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
     defaults:
       run:
         working-directory: backend
@@ -27,8 +72,10 @@ jobs:
           --health-cmd="pg_isready -U alumia_test -d alumia_test"
           --health-interval=5s --health-timeout=5s --health-retries=10
     steps:
-      - uses: actions/checkout@v4
-      - uses: shivammathur/setup-php@v2
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
         with:
           php-version: '8.3'
           extensions: mbstring, dom, xml, pdo_pgsql, pdo_sqlite
@@ -36,6 +83,7 @@ jobs:
           coverage: none
       - run: composer install --no-interaction --prefer-dist --no-progress
       - run: composer validate --strict
+      - run: composer audit --no-interaction
       - run: composer lint
       - name: SQLite tests
         run: composer test
@@ -54,3 +102,20 @@ jobs:
           DB_PASSWORD: test-only-password
           DB_SCHEMA: alumia_testing
           DB_SSLMODE: disable
+
+  required:
+    name: CI required
+    if: ${{ always() }}
+    needs: [workflow-lint, frontend, backend]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - name: Require every validation to succeed
+        env:
+          WORKFLOW_RESULT: ${{ needs.workflow-lint.result }}
+          FRONTEND_RESULT: ${{ needs.frontend.result }}
+          BACKEND_RESULT: ${{ needs.backend.result }}
+        run: |
+          test "$WORKFLOW_RESULT" = success
+          test "$FRONTEND_RESULT" = success
+          test "$BACKEND_RESULT" = success
