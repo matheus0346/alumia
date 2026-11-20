@@ -1,6 +1,6 @@
-CI, publicação manual da demonstração e o container (verificado localmente, não publicado) estão implementados. Hospedagem do piloto, backup e recuperação ainda precisam de implementação e ensaio.O container (`Dockerfile`, OPS-003) usa servidor HTTP apropriado, build React e dependências instaladas pelos lockfiles; detalhes em `devops.md`. Não usar vite dev ou artisan serve em serviço público. Antes de qualquer entrega, repetir `bash scripts/container-smoke.sh` no SHA escolhido. Variáveis de ambiente mínimas: APP_KEY, APP_URL, DB_* (Session Pooler), DB_SCHEMA, DB_SSLMODE, SESSION_SECURE_COOKIE; a porta interna é 8080.# Operação e recuperação
+# Operação e recuperação
 
-Procedimentos adotados em 18/11/2026. Estado atual: somente CI e publicação manual da demonstração estão implementadas. Container, hospedagem do piloto, backup e recuperação ainda precisam de implementação e ensaio. Não executar procedimentos de produção como testes.
+Procedimentos adotados em 18/11/2026. Estado atual: CI, publicação manual da demonstração e o container (verificado localmente, não publicado) estão implementados. Hospedagem do piloto, backup e recuperação ainda precisam de implementação e ensaio. Não executar procedimentos de produção como testes.
 
 ## Publicar a demonstração no Pages
 
@@ -16,7 +16,7 @@ Este fluxo não publica Laravel e não aplica migrações. Publicar o Pages não
 
 ## Publicar o piloto: procedimento a implementar e ensaiar
 
-Antes da primeira publicação, escolher hospedagem sem cobrança automática, confirmar quotas e separar homologação de participantes. Preparar um container com servidor HTTP apropriado, build React, código Laravel e dependências instaladas pelos lockfiles. Não usar vite dev ou artisan serve em serviço público.
+Antes da primeira publicação, escolher hospedagem sem cobrança automática, confirmar quotas e separar homologação de participantes. O container (`Dockerfile`, OPS-003) usa servidor HTTP apropriado, build React e dependências instaladas pelos lockfiles; detalhes em `devops.md`. Não usar vite dev ou artisan serve em serviço público. Antes de qualquer entrega, repetir `bash scripts/container-smoke.sh` no SHA escolhido. Variáveis de ambiente mínimas: APP_KEY, APP_URL, DB_* (Session Pooler), DB_SCHEMA, DB_SSLMODE, SESSION_SECURE_COOKIE; a porta interna é 8080.
 
 Cada entrega deverá:
 
