@@ -34,6 +34,14 @@ composer test
 
 SQLite em memória é a verificação rápida. Repetir `composer test` com PostgreSQL isolado (`DB_DATABASE` terminado em `_test`, `DB_SCHEMA` em `_testing`) conforme `docs/acessos-backend.md`. Nunca usar credenciais do piloto. A CI prepara esse banco automaticamente.
 
+Para alterações no container (`Dockerfile`, `docker/`), com Docker acessível ao usuário:
+
+```bash
+bash scripts/container-smoke.sh
+```
+
+O script constrói a imagem e testa `/up`, `/api/v1/health`, o React e o usuário sem root contra um PostgreSQL descartável em container; nunca usa Supabase nem dados reais.
+
 Para workflows, executar `actionlint` na raiz. A versão e o SHA256 do binário estão no workflow de CI. Não é necessário instalar ferramentas globalmente.
 
 Atualizações de dependências passam pelo mesmo PR e testes. Revisar alterações de versão principal separadamente. Manter `package-lock.json` e `backend/composer.lock`; usar `npm ci` e `composer install` para reproduzir instalações, sem atualizar versões durante um deploy.

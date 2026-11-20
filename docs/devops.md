@@ -6,7 +6,7 @@ Decisão adotada em 18/11/2026. Objetivo: testar, revisar, publicar e recuperar 
 
 React e Laravel formam a aplicação do piloto na mesma origem. O Laravel concentra autenticação, sessões, permissões e acesso ao PostgreSQL. O Supabase é o banco gerenciado previsto; sua integração administrativa com o Codex foi verificada, mas a conexão de execução do Laravel, schema e migrações remotas ainda precisam de preparação. Render Free continua candidato à hospedagem, sem contratação ou deploy nesta etapa.
 
-A demonstração usa um build separado e dados fictícios. GitHub Pages serve somente essa demonstração. Não existe ainda pipeline de publicação do piloto, container homologado ou ambiente com alunos.
+A demonstração usa um build separado e dados fictícios. GitHub Pages serve somente essa demonstração. Existe um container verificado localmente (OPS-003), mas ainda não há pipeline de publicação do piloto, registro de imagens nem ambiente com alunos.
 
 ```mermaid
 flowchart LR
@@ -29,7 +29,7 @@ flowchart LR
 - CI sem dados ou segredos reais, sem credenciais de Supabase e sem acesso ao banco do piloto. O serviço PostgreSQL da CI é descartável.
 - Segredos por ambiente, acessos mínimos, ausência de textos e tokens em logs. O frontend não recebe credenciais PostgreSQL nem chaves administrativas.
 - Migrações versionadas, preferencialmente aditivas e compatíveis com o código anterior. Backup e plano de recuperação antes de mudanças relevantes. Voltar o código não reverte o banco.
-- Mesmo artefato de aplicação promovido entre ambientes, identificado pelo SHA Git; configurações e segredos são fornecidos pelo ambiente. Esse mecanismo será implementado com o container.
+- Mesmo artefato de aplicação promovido entre ambientes, identificado pelo SHA Git; configurações e segredos são fornecidos pelo ambiente. O container (OPS-003) grava o SHA no rótulo `org.opencontainers.image.revision`; a promoção por SHA entre ambientes depende de OPS-004.
 
 ## O que os arquivos desta etapa implementam
 
@@ -68,12 +68,28 @@ Essas regras de conta não são criadas apenas ao versionar YAML. Sua ativação
 | OPS-001 | Documentação, regras dos agentes, template de PR e CI sem acesso real | Validada na CI remota de push e PR em 18/11/2026 |
 | OPS-002 | Ativar proteção da main e revisar permissões depois do primeiro PR verde | Proteção da main ativa e permissões de Actions verificadas em 18/11/2026 |
 | OPS-007 | Atualizar Vite/plugin e cadeia de build, corrigir os achados de ferramentas e repetir auditoria completa e os dois builds | Vite/plugin atualizados; auditoria completa sem achados, builds e CI remota aprovados no PR #2 |
-| OPS-003 | Container React/Laravel com servidor HTTP apropriado, build reproduzível e health checks; executar localmente e registrar evidências | Pendente; não tratar Dockerfile não testado como pronto |
+| OPS-003 | Container React/Laravel com servidor HTTP apropriado, build reproduzível e health checks; executar localmente e registrar evidências | Implementado e verificado localmente em 20/11/2026 com `bash scripts/container-smoke.sh` (PR de OPS-003); CI remota do PR e merge pendentes. Não implica publicação |
 | OPS-004 | Homologação gratuita com dados sintéticos, segredos por ambiente, artefato por SHA e publicação manual serializada | Pendente da escolha e validação da hospedagem |
 | OPS-005 | Backup protegido, restauração em banco separado e recuperação de versão anterior ensaiadas | Pendente; requisito antes de alunos |
 | OPS-006 | Homologar acessos e isolamento, falhas de banco e retomada após suspensão; nomear responsável operacional | Pendente; requisito antes de alunos |
 
 Responsável inicial por merge, autorização de publicação e incidentes: mantenedor do repositório. Nomear substituto antes do piloto. Não há operação humana 24 horas presumida.
+
+### OPS-003 — container
+
+Arquivos: `Dockerfile`, `.dockerignore`, `docker/apache.conf`, `docker/php.ini` e `scripts/container-smoke.sh`.
+
+**Servidor.** Apache + PHP 8.3 (`php:8.3-apache`), porta 8080, processo sem root (www-data). Não usa `vite dev` nem `artisan serve`.
+
+**Build.** Em estágios: `npm ci` + `npm run build` (piloto, com a verificação de isolamento existente) e `composer install --no-dev` pelo `composer.lock`. A imagem final não tem `.env`, dependências de desenvolvimento nem banco local. Imagens base fixadas por tag e digest; atualizá-las exige revisão e repetir a verificação.
+
+**Configuração.** APP_KEY, DB_* e SESSION_* entram somente por variáveis de ambiente em tempo de execução. O container não roda migrações ao iniciar (ver `operacao.md`). O rótulo `org.opencontainers.image.revision` guarda o SHA Git (`--build-arg GIT_SHA`).
+
+**Health checks.** `/up` (processo vivo; usado pelo HEALTHCHECK do Docker) e `/api/v1/health` (banco e estrutura prontos; 503 `not_ready` sem detalhes enquanto o banco ou as migrações faltarem). A prontidão é a verificação para o provedor.
+
+**Verificação local.** `bash scripts/container-smoke.sh` constrói a imagem, sobe um PostgreSQL 16 descartável com credenciais geradas a cada execução e confere `/up`, `/api/v1/health` antes e depois de migrar esse banco descartável, React e assets, usuário sem root, cabeçalhos, HEALTHCHECK e ausência da credencial nos logs. Nunca aponta para Supabase. Evidências da primeira execução estão no PR.
+
+**Limites desta etapa.** O container não foi publicado, não há registro de imagens nem deploy, e a CI ainda não constrói a imagem. Atrás de um proxy TLS do provedor, ainda é preciso confirmar na homologação (OPS-004) a detecção de HTTPS/proxies confiáveis pelo Laravel, necessária para cookies seguros.
 
 ## Por que não uma skill nova
 
