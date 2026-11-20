@@ -24,8 +24,12 @@ backend/storage/framework/views/*
 backend/storage/framework/testing
 backend/public/app
 backend/bootstrap/cache/*.php
-*.log
-*.md
+**/*.log
+**/*.md
 !backend/AGENTS.md
+backend/storage/app/private/*
+backend/storage/app/public/*
+!backend/storage/app/private/.gitignore
+!backend/storage/app/public/.gitignore
 Dockerfile
 .dockerignore
