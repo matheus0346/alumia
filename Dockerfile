@@ -55,11 +55,6 @@ RUN composer dump-autoload --no-dev --classmap-authoritative \
 # ---------------------------------------------------------------------------
 # Imagem final.
 FROM php-base AS runtime
-ARG GIT_SHA=unknown
-LABEL org.opencontainers.image.title="AlumIA (React + Laravel)" \
-      org.opencontainers.image.source="https://github.com/matheus0346/alumia" \
-      org.opencontainers.image.revision="${GIT_SHA}"
-
 RUN set -eux; \
     mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"; \
     a2enmod rewrite headers; \
@@ -70,14 +65,22 @@ COPY docker/apache.conf /etc/apache2/sites-available/alumia.conf
 RUN a2ensite alumia
 
 WORKDIR /var/www/html
-COPY --from=vendor --chown=www-data:www-data /app ./
-COPY --from=frontend --chown=www-data:www-data /src/backend/public/app ./public/app
+# Código pertence ao root (somente leitura para www-data); só storage/ e bootstrap/cache são graváveis.
+COPY --from=vendor /app ./
+COPY --from=frontend /src/backend/public/app ./public/app
 RUN set -eux; \
-    mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs bootstrap/cache; \
+    mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs storage/app/private storage/app/public bootstrap/cache; \
     chown -R www-data:www-data storage bootstrap/cache /var/run/apache2 /var/lock/apache2 /var/log/apache2; \
     chmod -R ug+rwX storage bootstrap/cache
 
-ENV APP_ENV=production APP_DEBUG=false LOG_CHANNEL=stderr
+# Sem .env na imagem: estes são os padrões seguros; o ambiente pode sobrescrevê-los.
+ENV APP_ENV=production APP_DEBUG=false LOG_CHANNEL=stderr LOG_LEVEL=warning SESSION_ENCRYPT=true APP_LOCALE=pt_BR APP_FALLBACK_LOCALE=pt_BR
+# GIT_SHA é obrigatório (--build-arg GIT_SHA=$(git rev-parse HEAD)); fica aqui para não invalidar o cache acima.
+ARG GIT_SHA
+RUN test -n "$GIT_SHA" || { echo 'ERRO: informe --build-arg GIT_SHA=$(git rev-parse HEAD)' >&2; exit 1; }
+LABEL org.opencontainers.image.title="AlumIA (React + Laravel)" \
+      org.opencontainers.image.source="https://github.com/matheus0346/alumia" \
+      org.opencontainers.image.revision="${GIT_SHA}"
 USER www-data
 EXPOSE 8080
 # /up = processo vivo. /api/v1/health (banco e estrutura prontos) é a verificação de prontidão do provedor.
