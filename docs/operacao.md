@@ -1,4 +1,4 @@
-# Operação e recuperação
+CI, publicação manual da demonstração e o container (verificado localmente, não publicado) estão implementados. Hospedagem do piloto, backup e recuperação ainda precisam de implementação e ensaio.O container (`Dockerfile`, OPS-003) usa servidor HTTP apropriado, build React e dependências instaladas pelos lockfiles; detalhes em `devops.md`. Não usar vite dev ou artisan serve em serviço público. Antes de qualquer entrega, repetir `bash scripts/container-smoke.sh` no SHA escolhido. Variáveis de ambiente mínimas: APP_KEY, APP_URL, DB_* (Session Pooler), DB_SCHEMA, DB_SSLMODE, SESSION_SECURE_COOKIE; a porta interna é 8080.# Operação e recuperação
 
 Procedimentos adotados em 18/11/2026. Estado atual: somente CI e publicação manual da demonstração estão implementadas. Container, hospedagem do piloto, backup e recuperação ainda precisam de implementação e ensaio. Não executar procedimentos de produção como testes.
 
