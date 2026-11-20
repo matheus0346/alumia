@@ -76,8 +76,10 @@ docker exec "$APP" php artisan alumia:database:check >/dev/null || fail "alumia:
 ok "alumia:database:check passou"
 
 [ "$(status "$BASE/")" = 200 ] || fail "/ não serviu o React"
-curl -s "$BASE/" | grep -q '/app/assets/' || fail "index.html sem os assets do piloto"
-ASSET="$(curl -s "$BASE/" | grep -om1 '/app/assets/[^"]*\.js')"
+INDEX="$(curl -s "$BASE/")"
+grep -q '/app/assets/' <<<"$INDEX" || fail "index.html sem os assets do piloto"
+ASSET="$(grep -om1 '/app/assets/[^"]*\.js' <<<"$INDEX" || true)"
+[ -n "$ASSET" ] || fail "nenhum asset .js encontrado no index.html"
 [ "$(status "$BASE$ASSET")" = 200 ] || fail "asset $ASSET não servido"
 [ "$(curl -s "$BASE/app/build-mode.json")" = '{"mode":"pilot"}' ] || fail "build não é o do piloto"
 ok "React do piloto servido em / e assets em /app/assets"
@@ -109,7 +111,8 @@ done
 [ "$(docker inspect -f '{{.State.Health.Status}}' "$APP")" = healthy ] || fail "HEALTHCHECK do Docker não ficou healthy"
 ok "HEALTHCHECK do Docker = healthy"
 
-if docker logs "$APP" 2>&1 | grep -q "$PGPASS"; then fail "senha de teste apareceu nos logs"; fi
+LOGS="$(docker logs "$APP" 2>&1)"
+if grep -qF "$PGPASS" <<<"$LOGS"; then fail "credencial vazou nos logs"; fi
 ok "logs sem a credencial de teste"
 
 echo "Container verificado: $(docker image inspect -f '{{index .Config.Labels "org.opencontainers.image.revision"}}' "$IMAGE")"
