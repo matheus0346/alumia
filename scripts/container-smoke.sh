@@ -27,11 +27,13 @@ fi
 docker network create "$NET" >/dev/null
 docker run -d --name "$PG" --network "$NET" \
   -e POSTGRES_USER=alumia_test -e POSTGRES_PASSWORD="$PGPASS" -e POSTGRES_DB=alumia_container_test \
-  postgres:16 >/dev/null
-for _ in $(seq 1 40); do
-  docker exec "$PG" pg_isready -U alumia_test -d alumia_container_test >/dev/null 2>&1 && break
+  postgres:16@sha256:3950ad7c3148ca2175ef1b6c36c9efbf78957ae8fbe8b3a5d7c35af50500382f >/dev/null
+PG_READY=0
+for _ in $(seq 1 60); do
+  if docker exec "$PG" pg_isready -h 127.0.0.1 -U alumia_test -d alumia_container_test >/dev/null 2>&1; then PG_READY=1; break; fi
   sleep 1
 done
+[ "$PG_READY" = 1 ] || fail "PostgreSQL descartável não ficou pronto em 60 s"
 docker exec "$PG" psql -U alumia_test -d alumia_container_test -qc 'CREATE SCHEMA IF NOT EXISTS alumia' >/dev/null
 
 APP_KEY="$(docker run --rm "$IMAGE" php -r 'echo "base64:".base64_encode(random_bytes(32));')"
@@ -41,7 +43,7 @@ docker run -d --name "$APP" --network "$NET" -p 127.0.0.1::8080 \
   -e DB_USERNAME=alumia_test -e DB_PASSWORD="$PGPASS" -e DB_SCHEMA=alumia -e DB_SSLMODE=prefer \
   -e SESSION_SECURE_COOKIE=false \
   "$IMAGE" >/dev/null
-PORT="$(docker port "$APP" 8080/tcp | head -1 | sed 's/.*://')"
+PORT="$(docker port "$APP" 8080/tcp | sed -n '1s/.*://p')"
 BASE="http://127.0.0.1:$PORT"
 
 for _ in $(seq 1 30); do [ "$(status "$BASE/up")" = 200 ] && break; sleep 1; done
@@ -53,35 +55,52 @@ ok "/up responde 200 (processo vivo)"
 ok "processo roda sem root (uid $(docker exec "$APP" id -u))"
 
 HEADERS="$(curl -si "$BASE/up")"
-echo "$HEADERS" | grep -qi '^X-Powered-By' && fail "X-Powered-By exposto"
-echo "$HEADERS" | grep -qi '^Server: Apache/[0-9]' && fail "versão do Apache exposta"
+grep -qi '^X-Powered-By' <<<"$HEADERS" && fail "X-Powered-By exposto"
+grep -qi '^Server: Apache/[0-9]' <<<"$HEADERS" && fail "versão do Apache exposta"
 ok "sem X-Powered-By nem versão do servidor"
 
 # Antes das migrações: indisponibilidade explícita, sem vazar detalhes do banco.
 BODY="$(curl -s -w '\n%{http_code}' "$BASE/api/v1/health")"
-[ "$(echo "$BODY" | tail -1)" = 503 ] || fail "esperado 503 not_ready antes das migrações: $BODY"
-echo "$BODY" | head -1 | grep -q 'not_ready' || fail "corpo inesperado: $BODY"
-echo "$BODY" | grep -qiE 'password|SQLSTATE|alumia_test|host' && fail "health vazou detalhes"
+[ "$(tail -n1 <<<"$BODY")" = 503 ] || fail "esperado 503 not_ready antes das migrações: $BODY"
+sed -n 1p <<<"$BODY" | grep -q 'not_ready' || fail "corpo inesperado: $BODY"
+grep -qiE 'password|SQLSTATE|alumia_test|host' <<<"$BODY" && fail "health vazou detalhes"
 ok "/api/v1/health = 503 not_ready sem migrações, sem vazar detalhes"
 
 # Migração somente no PostgreSQL descartável deste teste.
 docker exec "$APP" php artisan migrate --force >/dev/null
 BODY="$(curl -s -w '\n%{http_code}' "$BASE/api/v1/health")"
-[ "$(echo "$BODY" | tail -1)" = 200 ] || fail "esperado 200 ready depois das migrações: $BODY"
-echo "$BODY" | head -1 | grep -q '"ready"' || fail "corpo inesperado: $BODY"
+[ "$(tail -n1 <<<"$BODY")" = 200 ] || fail "esperado 200 ready depois das migrações: $BODY"
+sed -n 1p <<<"$BODY" | grep -q '"ready"' || fail "corpo inesperado: $BODY"
 ok "/api/v1/health = 200 ready depois de migrar o banco descartável"
-docker exec "$APP" php artisan alumia:database:check >/dev/null && ok "alumia:database:check passou"
+docker exec "$APP" php artisan alumia:database:check >/dev/null || fail "alumia:database:check falhou"
+ok "alumia:database:check passou"
 
 [ "$(status "$BASE/")" = 200 ] || fail "/ não serviu o React"
 curl -s "$BASE/" | grep -q '/app/assets/' || fail "index.html sem os assets do piloto"
-ASSET="$(curl -s "$BASE/" | grep -o '/app/assets/[^"]*\.js' | head -1)"
+ASSET="$(curl -s "$BASE/" | grep -om1 '/app/assets/[^"]*\.js')"
 [ "$(status "$BASE$ASSET")" = 200 ] || fail "asset $ASSET não servido"
 [ "$(curl -s "$BASE/app/build-mode.json")" = '{"mode":"pilot"}' ] || fail "build não é o do piloto"
 ok "React do piloto servido em / e assets em /app/assets"
 
-[ "$(status "$BASE/.env")" != 200 ] || fail ".env acessível"
+docker exec -u root "$APP" sh -c 'echo probe > /var/www/html/public/.probe'
+[ "$(status "$BASE/.probe")" = 403 ] || fail "arquivo oculto em public/ não retornou 403"
+[ "$(status "$BASE/.htaccess")" = 403 ] || fail ".htaccess não retornou 403"
+docker exec -u root "$APP" rm -f /var/www/html/public/.probe
 [ "$(status "$BASE/app/")" != 500 ] || fail "/app/ com erro 500"
-ok "arquivos ocultos não são servidos"
+ok "arquivos ocultos em public/ respondem 403"
+
+# Código somente leitura para o usuário da aplicação; só storage/ e bootstrap/cache são graváveis.
+for d in app vendor public config; do
+  if docker exec "$APP" sh -c "touch /var/www/html/$d/.w 2>/dev/null"; then fail "$d/ gravável por www-data"; fi
+done
+docker exec "$APP" sh -c 'touch /var/www/html/storage/.w && rm /var/www/html/storage/.w' || fail "storage/ não gravável"
+ok "app/, vendor/, public/ e config/ não são graváveis; storage/ é"
+
+# Variáveis de ambiente padrão da imagem ativas (sem imprimir segredos).
+CFG="$(docker exec "$APP" php -r 'require "vendor/autoload.php"; $a = require "bootstrap/app.php"; $a->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap(); echo json_encode([config("session.encrypt"), config("app.locale"), config("app.debug"), config("logging.channels.stderr.level")]);' 2>/dev/null | tail -n1)"
+[ "$CFG" = '[true,"pt_BR",false,"warning"]' ] || fail "configuração padrão inesperada: $CFG"
+ok "session.encrypt=true, locale=pt_BR, debug=false, log warning"
+
 
 for _ in $(seq 1 20); do
   [ "$(docker inspect -f '{{.State.Health.Status}}' "$APP")" = healthy ] && break
