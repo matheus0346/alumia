@@ -8,11 +8,18 @@ updates:
     groups:
       compatible-updates:
         update-types: [minor, patch]
+      # React e React DOM precisam subir juntos; separados, nenhum dos dois PRs instala.
+      react:
+        patterns: ["react", "react-dom"]
   - package-ecosystem: composer
     directory: /backend
     schedule:
       interval: weekly
     open-pull-requests-limit: 3
+    ignore:
+      # PHPUnit 13 exige PHP >= 8.4; o projeto usa PHP 8.3. Rever ao migrar a versão do PHP.
+      - dependency-name: phpunit/phpunit
+        update-types: ["version-update:semver-major"]
     groups:
       compatible-updates:
         update-types: [minor, patch]
