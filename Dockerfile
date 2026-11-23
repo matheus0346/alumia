@@ -62,6 +62,7 @@ RUN set -eux; \
     : > /etc/apache2/ports.conf
 COPY docker/php.ini "$PHP_INI_DIR/conf.d/zz-alumia.ini"
 COPY docker/apache.conf /etc/apache2/sites-available/alumia.conf
+COPY docker/mpm.conf /etc/apache2/conf-enabled/zz-alumia-mpm.conf
 RUN a2ensite alumia
 
 WORKDIR /var/www/html
@@ -74,7 +75,7 @@ RUN set -eux; \
     chmod -R ug+rwX storage bootstrap/cache
 
 # Sem .env na imagem: estes são os padrões seguros; o ambiente pode sobrescrevê-los.
-ENV APP_ENV=production APP_DEBUG=false LOG_CHANNEL=stderr LOG_LEVEL=warning SESSION_ENCRYPT=true APP_LOCALE=pt_BR APP_FALLBACK_LOCALE=pt_BR
+ENV APP_ENV=production APP_DEBUG=false LOG_CHANNEL=stderr LOG_LEVEL=warning DB_CONNECT_TIMEOUT=30 SESSION_ENCRYPT=true APP_LOCALE=pt_BR APP_FALLBACK_LOCALE=pt_BR
 # GIT_SHA é obrigatório (--build-arg GIT_SHA=$(git rev-parse HEAD)); fica aqui para não invalidar o cache acima.
 # No Render o SHA chega em RENDER_GIT_COMMIT (variável de build); fora dele, --build-arg GIT_SHA.
 ARG GIT_SHA
