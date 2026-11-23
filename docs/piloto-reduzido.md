@@ -83,6 +83,21 @@ bash scripts/ops/restore-test.sh /caminho/protegido/alumia-AAAAMMDDTHHMMSSZ.dump
 
 O backup recusa diretório dentro de repositório Git ou com permissão aberta e não deixa arquivo parcial se o `pg_dump` falhar. O dump contém textos de estudantes: não anexar ao GitHub, ao chat ou a artefatos. O disco do container não é destino de backup. O tempo de restauração medido e a idade do dump são a base para RTO e RPO; cadastrar o responsável e o destino externo ainda depende da equipe.
 
+## Teste de carga local (23/11/2026)
+
+Imagem da main 993581a, PostgreSQL 16 descartável, dados sintéticos, 24 estudantes pelo mesmo IP (login por token, consulta do período e envio), com encerramento do período pelo administrador no meio. Em todos os casos: nenhum duplicado, nenhum envio gravado depois do encerramento, nenhum texto nos logs.
+
+| Cenário | Resultado dos envios | 5xx | Latência p50 / p95 / máx. (ms) |
+| --- | --- | --- | --- |
+| Sem limite, chegadas em 4 s | 13×201 e 11×409 `period_closed` | 0 | login 91 / 265 / 407; envio 109 / 390 / 402 |
+| 512 MB e 0,1 CPU, padrão anterior | 13×201, 8×401, 3×500 | 14 | 8000 a 22000 |
+| 512 MB e 0,1 CPU, `DB_CONNECT_TIMEOUT=20` | 24×201 | 0 | login 18206 / 24802 / 26991; envio 13799 / 18609 / 20394 |
+| 512 MB e 0,1 CPU, timeout + 8 workers | 23×201 e 1×409 | 0 | login 14793 / 16500 / 17004; envio 12005 / 13104 / 13505 |
+| **Imagem corrigida** (timeout 30 s, 10 workers), 512 MB e 0,1 CPU | 24×201 | 0 | login 14196 / 16793 / 17491; envio 13497 / 15105 / 16797 |
+| Idem, chegadas espalhadas em 60 s | 24×201 | 0 | login 3308 / 5297 / 5297; envio 4798 / 5992 / 7000 |
+
+Causa dos erros no padrão anterior: com 0,1 CPU a conexão ao banco passava dos 5 s do timeout (`DB_CONNECT_TIMEOUT`). A imagem agora usa 30 s e limita o Apache a 10 workers. Cada requisição consome cerca de 30 ms de CPU, então o limite prático do plano gratuito é de poucas requisições por segundo: por isso o roteiro pede entrada em grupos. Não é um teste de carga do Render nem do Supabase reais.
+
 ## Riscos para o dia 27
 
 - Render Free dorme após inatividade (primeira requisição pode levar cerca de um minuto): acordar o serviço antes da aula, sem monitor artificial.
