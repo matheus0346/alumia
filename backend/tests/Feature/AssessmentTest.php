@@ -360,4 +360,35 @@ class AssessmentTest extends TestCase
         $this->assertSame(422, $statuses[0]);
         $this->assertSame(429, $statuses[20]);
     }
+
+    public function test_submission_after_admin_close_is_rejected_and_nothing_is_saved(): void
+    {
+        $this->at('2026-11-24 09:00:00');
+        [$school] = $this->school();
+        [, $token] = $this->student($school);
+        $period = $this->period($school);
+        $url = "/api/v1/student/assessment-periods/{$period->id}/submission";
+        $this->loginStudent($token);
+        $this->logout();
+        $this->loginInstitution($this->admin());
+        $this->postJson("/api/v1/admin/assessment-periods/{$period->id}/close")->assertOk();
+        $this->logout();
+        $this->loginStudent($token);
+        $this->postJson($url, ['text' => self::TEXT])->assertStatus(409)->assertJsonPath('error', 'period_closed');
+        $this->assertSame(0, AssessmentSubmission::count());
+    }
+
+    public function test_period_closed_and_duplicate_still_return_409_not_503(): void
+    {
+        $this->at('2026-11-24 09:00:00');
+        [$school] = $this->school();
+        [, $token] = $this->student($school);
+        $period = $this->period($school);
+        $url = "/api/v1/student/assessment-periods/{$period->id}/submission";
+        $this->loginStudent($token);
+        $this->postJson($url, ['text' => self::TEXT])->assertCreated();
+        $this->postJson($url, ['text' => self::TEXT])->assertStatus(409)->assertJsonPath('error', 'already_submitted');
+        $this->at('2026-12-01 09:00:00');
+        $this->postJson($url, ['text' => self::TEXT])->assertStatus(409);
+    }
 }
