@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        RateLimiter::for('csrf', fn (Request $request) => Limit::perMinute(60)->by($request->ip()));
+        RateLimiter::for('csrf', fn (Request $request) => Limit::perMinute(200)->by($request->ip()));
         RateLimiter::for('institution-login', function (Request $request) {
             $username = $request->input('username');
             $username = is_string($username) ? Str::lower(trim($username)) : '';
@@ -34,7 +34,8 @@ class AppServiceProvider extends ServiceProvider
                 Limit::perMinute(30)->by('ip:'.$request->ip()),
             ];
         });
-        RateLimiter::for('student-login', fn (Request $request) => Limit::perMinute(20)->by($request->ip()));
+        // Uma turma inteira costuma sair pelo mesmo IP da escola: limite por IP folgado. O token tem 256 bits, então a força bruta é inviável.
+        RateLimiter::for('student-login', fn (Request $request) => Limit::perMinute(120)->by($request->ip()));
         RateLimiter::for('password-change', fn (Request $request) => Limit::perMinute(5)->by('password:'.(Auth::guard('web')->id() ?? $request->ip())));
     }
 }
