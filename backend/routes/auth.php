@@ -42,7 +42,7 @@ Route::prefix('api/v1')->middleware(PrivateApiResponse::class)->group(function (
         });
         Route::middleware(RequireStudent::class)->group(function () {
             Route::get('student/assessment', [StudentAssessmentController::class, 'current']);
-            Route::post('student/assessment-periods/{period}/submission', [StudentAssessmentController::class, 'submit'])->whereNumber('period')->middleware('throttle:20,1');
+            Route::post('student/assessment-periods/{period}/submission', [StudentAssessmentController::class, 'submit'])->whereNumber('period')->middleware('throttle:assessment-submit');
         });
     });
 });
