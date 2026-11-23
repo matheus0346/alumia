@@ -38,6 +38,11 @@ class AssessmentTest extends TestCase
         return User::factory()->create(['role' => 'admin', 'school_id' => null, 'must_change_password' => false]);
     }
 
+    private function schoolUser(): User
+    {
+        return $this->school()[1];
+    }
+
     private function school(string $name = 'Escola sintética'): array
     {
         $school = School::create(['name' => $name]);
@@ -313,5 +318,46 @@ class AssessmentTest extends TestCase
         $this->assertSame(0, AssessmentSubmission::count());
         $csrf = $this->getJson('/api/v1/auth/csrf')->json('csrf_token');
         $this->withSession(['_token' => $csrf])->postJson($url, ['text' => self::TEXT], ['X-CSRF-TOKEN' => $csrf])->assertCreated();
+    }
+
+    public function test_a_whole_class_behind_one_ip_can_submit_in_the_same_minute(): void
+    {
+        $this->at('2026-11-24 09:00:00');
+        [$school] = $this->school();
+        $period = $this->period($school);
+        for ($n = 1; $n <= 21; $n++) {
+            [, $token] = $this->student($school, sprintf('CLASSE-%02d', $n));
+            $this->loginStudent($token);
+            $this->postJson("/api/v1/student/assessment-periods/{$period->id}/submission", ['text' => self::TEXT])->assertCreated();
+            $this->logout();
+        }
+        $this->assertSame(21, AssessmentSubmission::count());
+    }
+
+    public function test_one_student_cannot_flood_the_submission_endpoint(): void
+    {
+        $this->at('2026-11-24 09:00:00');
+        [$school] = $this->school();
+        [, $token] = $this->student($school);
+        $period = $this->period($school);
+        $this->loginStudent($token);
+        $codes = [];
+        for ($n = 0; $n < 12; $n++) {
+            $codes[] = $this->postJson("/api/v1/student/assessment-periods/{$period->id}/submission", ['text' => ''])->getStatusCode();
+        }
+        $this->assertSame(429, end($codes));
+        $this->assertSame(422, $codes[0]);
+    }
+
+    public function test_institution_login_is_limited_per_account_even_when_the_ip_changes(): void
+    {
+        $user = $this->schoolUser();
+        $statuses = [];
+        for ($n = 1; $n <= 21; $n++) {
+            $statuses[] = $this->withServerVariables(['REMOTE_ADDR' => "10.1.0.$n"])
+                ->postJson('/api/v1/auth/institution/login', ['username' => $user->username, 'password' => 'errada'])->getStatusCode();
+        }
+        $this->assertSame(422, $statuses[0]);
+        $this->assertSame(429, $statuses[20]);
     }
 }
