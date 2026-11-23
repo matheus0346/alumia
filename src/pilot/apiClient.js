@@ -6,6 +6,9 @@ export class ApiError extends Error {
       access_suspended: 'O acesso está suspenso. Procure o responsável pela escola.',
       password_change_required: 'Troque a senha temporária para continuar.',
       forbidden: 'Seu perfil não tem acesso a esta ação.',
+      period_closed: 'O período de avaliação não está aberto. O texto não foi enviado.',
+      already_submitted: 'Seu texto deste período já foi enviado.',
+      save_failed: 'Não foi possível salvar. Seu texto NÃO foi enviado; tente novamente em instantes.',
       network: 'Não foi possível confirmar a operação. Verifique a conexão e atualize os dados antes de repetir.',
       unavailable: 'O serviço está indisponível no momento. Tente novamente em instantes.',
     };
