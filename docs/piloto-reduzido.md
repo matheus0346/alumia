@@ -29,7 +29,7 @@ Entra: período de avaliação, envio de um texto pelo estudante e leitura pela 
 | `GET /api/v1/school/assessment-periods` | escola | períodos da escola com contagem |
 | `GET /api/v1/school/assessment-periods/{period}/submissions` | escola | textos paginados (código do estudante, texto, horário) |
 
-Mutações exigem sessão e CSRF, como as demais. O envio tem limite de 20 por minuto. Falha de gravação devolve 503 e a tela diz que o texto **não** foi enviado; nada é confirmado antes de salvar.
+Mutações exigem sessão e CSRF, como as demais. O envio tem limite de 10 por minuto por estudante (não por IP). Falha de gravação devolve 503 e a tela diz que o texto **não** foi enviado; nada é confirmado antes de salvar.
 
 ## Privacidade
 
@@ -37,7 +37,7 @@ O texto nunca é registrado em logs, mensagens de erro ou testes. Erros de grava
 
 ## Proxy e limites por IP
 
-Uma turma costuma sair pelo mesmo IP da escola. O limite de login estudantil por IP subiu de 20 para 120 por minuto (o token tem 256 bits) e o de CSRF de 60 para 200. Atrás do Render, defina `TRUSTED_PROXIES=*` para o Laravel enxergar o IP real e o esquema HTTPS; use isso somente porque o container só é alcançável pelo proxy do provedor.
+Uma turma costuma sair pelo mesmo IP da escola. O limite de login estudantil por IP subiu de 20 para 120 por minuto (o token tem 256 bits) e o de CSRF de 60 para 200. O login institucional ganhou um limite só por conta (20/min), independente do IP, para o caso de o IP ser falsificável por cabeçalho; efeito colateral: tentativas repetidas contra uma conta podem bloquear o login dela por 1 minuto. Atrás do Render, defina `TRUSTED_PROXIES=*` para o Laravel enxergar o IP real e o esquema HTTPS; use isso somente porque o container só é alcançável pelo proxy do provedor.
 
 ## Publicação no Render Free (preparada, não executada)
 
@@ -65,6 +65,8 @@ docker run --rm --env-file /caminho/protegido/migracao.env IMAGEM php artisan al
 ```
 
 A migração deste PR é aditiva (duas tabelas novas). Antes dela: `CREATE SCHEMA IF NOT EXISTS alumia;`, conferência de privilégios e backup (abaixo). Administrador inicial: `docker run -it --rm --env-file … IMAGEM php artisan alumia:admin:create IDENTIFICADOR` (senha pedida com entrada oculta).
+
+**Ordem:** migrar antes do primeiro deploy: `/api/v1/health` (health check do Render) responde 503 enquanto o banco não tiver as tabelas, e o deploy não ficaria saudável. Antes da aula, acesse `/up` alguns minutos antes para acordar o serviço (a primeira requisição do Free leva cerca de 1 minuto).
 
 Verificação pós-deploy (sem dados reais): `/up`, `/api/v1/health`, login do administrador, criação da escola, período, envio sintético, leitura pela escola, tudo com dados sintéticos; só depois cadastrar os códigos e tokens dos estudantes reais.
 
