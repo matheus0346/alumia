@@ -14,6 +14,8 @@
 - API de autenticação e permissões mínimas implementada e testada: `docs/acessos-backend.md`. Conexão Supabase e integração React pendentes; isso não declara concluídas as condições operacionais de liberação.
 - Esta decisão tecnológica atualiza a orientação genérica de não escolher stack antes da auditoria. Os requisitos de produto e de liberação continuam válidos.
 
+- Piloto reduzido de 27/11/2026: subconjunto mínimo de ALU-015/ALU-016 (janela de 7 dias, um texto por estudante, leitura pela escola) sem indicadores nem Lumi; regras DEC-06 provisórias para o teste em `docs/piloto-reduzido.md`. Não conclui ALU-015, ALU-016 nem ALU-017.
+
 ## 1. Objetivo
 
 Evoluir a implementação existente da AlumIA para apresentar e oferecer uma plataforma profissional de apoio socioemocional escolar, com duas experiências distintas:
