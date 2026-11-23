@@ -1,0 +1,38 @@
+# Render Blueprint (plano Free) do piloto AlumIA. NÃO é aplicado automaticamente: o serviço só é criado
+# quando o responsável autorizar e conectar o repositório no Render (ver docs/piloto-reduzido.md).
+# Segredos: sync:false = valor informado no painel do Render, nunca neste arquivo.
+services:
+  - type: web
+    name: alumia-homologacao
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    branch: main
+    autoDeploy: false # publicação manual e serializada (AGENTS.md); sem deploy a cada merge
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: APP_KEY
+        sync: false
+      - key: APP_URL
+        sync: false
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: "5432"
+      - key: DB_DATABASE
+        value: postgres
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_SCHEMA
+        value: alumia
+      - key: DB_SSLMODE
+        value: require
+      - key: SESSION_SECURE_COOKIE
+        value: "true"
+      - key: TRUSTED_PROXIES
+        value: "*"

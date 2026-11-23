@@ -76,11 +76,13 @@ RUN set -eux; \
 # Sem .env na imagem: estes são os padrões seguros; o ambiente pode sobrescrevê-los.
 ENV APP_ENV=production APP_DEBUG=false LOG_CHANNEL=stderr LOG_LEVEL=warning SESSION_ENCRYPT=true APP_LOCALE=pt_BR APP_FALLBACK_LOCALE=pt_BR
 # GIT_SHA é obrigatório (--build-arg GIT_SHA=$(git rev-parse HEAD)); fica aqui para não invalidar o cache acima.
+# No Render o SHA chega em RENDER_GIT_COMMIT (variável de build); fora dele, --build-arg GIT_SHA.
 ARG GIT_SHA
-RUN test -n "$GIT_SHA" || { echo 'ERRO: informe --build-arg GIT_SHA=$(git rev-parse HEAD)' >&2; exit 1; }
+ARG RENDER_GIT_COMMIT
+RUN test -n "${GIT_SHA:-$RENDER_GIT_COMMIT}" || { echo 'ERRO: informe --build-arg GIT_SHA=$(git rev-parse HEAD)' >&2; exit 1; }
 LABEL org.opencontainers.image.title="AlumIA (React + Laravel)" \
       org.opencontainers.image.source="https://github.com/matheus0346/alumia" \
-      org.opencontainers.image.revision="${GIT_SHA}"
+      org.opencontainers.image.revision="${GIT_SHA:-$RENDER_GIT_COMMIT}"
 USER www-data
 EXPOSE 8080
 # /up = processo vivo. /api/v1/health (banco e estrutura prontos) é a verificação de prontidão do provedor.

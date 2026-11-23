@@ -42,7 +42,7 @@ Antes de mudanças relevantes e antes de receber alunos:
 - Ensaiar restauração em outro banco, sem sobrescrever o original. Conferir estrutura, contagens, vínculos por escola e acesso sintético, registrando apenas evidências sem dados sensíveis.
 - Medir quanto tempo a restauração levou e qual intervalo de dados pode ser perdido. Só então definir e aceitar metas de tempo de recuperação (RTO) e perda máxima (RPO).
 
-Backup gerado não comprova restauração. Até haver ensaio e responsável, o piloto com alunos permanece pendente dessa condição.
+Scripts: `scripts/ops/backup-db.sh` e `scripts/ops/restore-test.sh` (ver `piloto-reduzido.md`). Backup gerado não comprova restauração. Até haver ensaio e responsável, o piloto com alunos permanece pendente dessa condição.
 
 ## Incidentes
 

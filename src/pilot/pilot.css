@@ -49,5 +49,11 @@
 .pilot-tabs button[aria-pressed=true] { background: #171717; color: #fff; border-color: #171717; }
 .pilot-dialog .pilot-primary { width: 100%; }
 .pilot-notice { display: flex; justify-content: space-between; align-items: center; gap: 18px; padding: 16px 5%; background: #f7f1df; border-bottom: 1px solid #d6c792; font-size: 13px; line-height: 1.6; }
+.pilot-periods { margin-top: 24px; }
+.pilot-periods select, .pilot-student textarea { width: 100%; font: inherit; padding: 10px; border: 1px solid #bbb; border-radius: 8px; }
+.pilot-text { white-space: pre-wrap; overflow-wrap: anywhere; margin: 10px 0 0; line-height: 1.6; }
+.pilot-notice-box { background: #f7f1df; border: 1px solid #d6c792; border-radius: 10px; padding: 16px 20px; margin: 18px 0; font-size: 14px; line-height: 1.6; }
+.pilot-notice-box h3 { margin: 0 0 8px; font-size: 15px; }
+.pilot-notice-box ul { margin: 0; padding-left: 20px; }
 @media(max-width: 760px) { .pilot-grid { grid-template-columns: 1fr; } .pilot-main { padding: 30px 16px 60px; } .pilot-card { padding: 22px; } .pilot-header { padding: 16px; } .pilot-header > div:last-child { gap: 12px; } .pilot-header span { max-width: 110px; } .pilot-records li > div:first-child { flex-direction: column; } }
 @media(prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }
