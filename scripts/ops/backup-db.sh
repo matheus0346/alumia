@@ -22,7 +22,7 @@ REPO_ROOT="$(git -C "$BACKUP_DIR" rev-parse --show-toplevel 2>/dev/null || true)
 [ -z "$REPO_ROOT" ] || fail "BACKUP_DIR está dentro de um repositório Git ($REPO_ROOT)"
 PERM="$(stat -c %a "$BACKUP_DIR")"
 case "$PERM" in
-  700|750) ;;
+  700) ;;
   *) fail "BACKUP_DIR deve ter permissão 700 (atual: $PERM). Rode: chmod 700 \"$BACKUP_DIR\"" ;;
 esac
 
@@ -30,7 +30,9 @@ STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 OUT="$BACKUP_DIR/alumia-$STAMP.dump"
 umask 077
 # --no-owner/--no-privileges: restaura em qualquer banco sem depender dos papéis do Supabase.
-docker run --rm ${DOCKER_NETWORK:+--network "$DOCKER_NETWORK"} -e PGPASSWORD="$DB_PASSWORD" -e PGSSLMODE="${DB_SSLMODE:-require}" "$PG_IMAGE" \
+# -e sem valor herda do ambiente do processo: a senha não aparece nos argumentos do docker (ps, /proc/*/cmdline).
+export PGPASSWORD="$DB_PASSWORD" PGSSLMODE="${DB_SSLMODE:-require}"
+docker run --rm ${DOCKER_NETWORK:+--network "$DOCKER_NETWORK"} -e PGPASSWORD -e PGSSLMODE "$PG_IMAGE" \
   pg_dump -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USERNAME" -d "$DB_DATABASE" \
   --schema="$SCHEMA" --format=custom --no-owner --no-privileges > "$OUT" || { rm -f "$OUT"; fail "pg_dump falhou (nada foi gravado)"; }
 [ -s "$OUT" ] || { rm -f "$OUT"; fail "dump vazio"; }
