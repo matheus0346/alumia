@@ -23,6 +23,10 @@ O build padrão gera `dist/build-mode.json`, verifica a ausência de código leg
 
 O cliente usa cookies da mesma origem, `Accept: application/json` e CSRF obtido por `/api/v1/auth/csrf`. O CSRF é renovado após login, troca de senha e logout. Somente rejeição explícita 419 permite uma repetição automática. Falha de rede ou 5xx nunca repete uma escrita automaticamente, pois a operação pode já ter sido concluída.
 
+## Avaliação mínima (piloto reduzido)
+
+Ver `piloto-reduzido.md`. Administração: seleciona a escola, abre período de 7 dias e encerra (sem ver textos). Estudante: aviso, texto com contador, confirmação antes do envio definitivo e estado "enviado"; falha de gravação mantém o texto na tela e informa que **não** foi enviado, com botão para verificar o estado. Escola: lê os textos por período. O texto do estudante existe apenas em memória até o envio.
+
 ## Desenvolvimento
 
 Pré-requisitos: Node 22, PHP 8.3+, Composer e PostgreSQL configurado conforme os documentos do backend. Não usar as contas demonstrativas como contas da API.
